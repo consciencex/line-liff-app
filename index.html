@@ -39,10 +39,53 @@
         }
 
         alert('Order submitted successfully!');
-        await liff.sendMessages([{
-          type: 'text',
-          text: `Order Summary:\nRefinery: ${refinery}\nBuyer Name: ${buyerName}\nProduct Type: ${productType}\nQuantity: ${quantity}\nUnits: ${units}\nDestination: ${destination}\nTarget Date: ${targetDate}`
-        }]);
+
+        const flexMessage = {
+          type: "flex",
+          altText: "Order Summary",
+          contents: {
+            type: "bubble",
+            body: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                { type: "text", text: "Order Summary", weight: "bold", size: "xl" },
+                { type: "box", layout: "vertical", margin: "lg", spacing: "sm", contents: [
+                  { type: "box", layout: "baseline", spacing: "sm", contents: [
+                    { type: "text", text: "Refinery:", color: "#aaaaaa", size: "sm", flex: 1 },
+                    { type: "text", text: refinery, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]},
+                  { type: "box", layout: "baseline", spacing: "sm", contents: [
+                    { type: "text", text: "Buyer Name:", color: "#aaaaaa", size: "sm", flex: 1 },
+                    { type: "text", text: buyerName, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]},
+                  { type: "box", layout: "baseline", spacing: "sm", contents: [
+                    { type: "text", text: "Product Type:", color: "#aaaaaa", size: "sm", flex: 1 },
+                    { type: "text", text: productType, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]},
+                  { type: "box", layout: "baseline", spacing: "sm", contents: [
+                    { type: "text", text: "Quantity:", color: "#aaaaaa", size: "sm", flex: 1 },
+                    { type: "text", text: quantity, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]},
+                  { type: "box", layout: "baseline", spacing: "sm", contents: [
+                    { type: "text", text: "Units:", color: "#aaaaaa", size: "sm", flex: 1 },
+                    { type: "text", text: units, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]},
+                  { type: "box", layout: "baseline", spacing: "sm", contents: [
+                    { type: "text", text: "Destination:", color: "#aaaaaa", size: "sm", flex: 1 },
+                    { type: "text", text: destination, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]},
+                  { type: "box", layout: "baseline", spacing: "sm", contents: [
+                    { type: "text", text: "Target Date:", color: "#aaaaaa", size: "sm", flex: 1 },
+                    { type: "text", text: targetDate, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]}
+                ]}
+              ]
+            }
+          }
+        };
+
+        await liff.sendMessages([flexMessage]);
         liff.closeWindow();
       } catch (error) {
         console.error('Error:', error);
@@ -57,21 +100,28 @@
           liff.login();
         } else {
           const profile = await liff.getProfile();
+          document.getElementById('userId').textContent = `LINE ID: ${profile.userId}`;
+          document.getElementById('displayName').textContent = `Display Name: ${profile.displayName}`;
           document.getElementById('buyerName').value = profile.displayName;
         }
       } catch (error) {
         console.error('LIFF initialization failed ', error);
+        alert('LIFF initialization failed: ' + error.message);
       }
     };
   </script>
 </head>
 <body>
   <h1>Order Form</h1>
+  <div>
+    <p id="userId"></p>
+    <p id="displayName"></p>
+  </div>
   <form onsubmit="submitForm(); return false;">
     <label for="refinery">Refinery:</label><br>
     <input type="text" id="refinery" name="refinery"><br>
     <label for="buyerName">Buyer Name:</label><br>
-    <input type="text" id="buyerName" name="buyerName" readonly><br>
+    <input type="text" id="buyerName" name="buyerName"><br>
     <label for="productType">Product Type:</label><br>
     <input type="text" id="productType" name="productType"><br>
     <label for="quantity">Quantity:</label><br>
