@@ -2,6 +2,59 @@
 <html>
 <head>
   <title>Order Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-container label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    .form-container input, .form-container select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .form-container input[type=submit] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .form-container input[type=submit]:hover {
+      background-color: #45a049;
+    }
+    .profile-info {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .profile-info img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+    .profile-info p {
+      margin: 5px 0;
+    }
+  </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
     async function submitForm() {
@@ -43,14 +96,15 @@
         // Send Flex Message after successful submission
         const flexMessage = {
           type: "flex",
-          altText: "Order Summary",
+          altText: "ยืนยันคำสั่งสำเร็จ !",
           contents: {
             type: "bubble",
             body: {
               type: "box",
               layout: "vertical",
               contents: [
-                { type: "text", text: "Order Summary", weight: "bold", size: "xl" },
+                { type: "text", text: "ยืนยันคำสั่งสำเร็จ !", weight: "bold", size: "xl" },
+                { type: "text", text: "กรุณารอหมายเลขคำสั่งประมาณ 5 นาที", size: "md", color: "#999999", margin: "md" },
                 { type: "box", layout: "vertical", margin: "lg", spacing: "sm", contents: [
                   { type: "box", layout: "baseline", spacing: "sm", contents: [
                     { type: "text", text: "Refinery:", color: "#aaaaaa", size: "sm", flex: 1 },
@@ -118,27 +172,36 @@
 </head>
 <body>
   <h1>Order Form</h1>
-  <div>
-    <img id="profilePicture" style="width: 100px; height: 100px; border-radius: 50%;" alt="Profile Picture">
-    <p id="userId"></p>
-    <p id="displayName"></p>
+  <div class="form-container">
+    <div class="profile-info">
+      <img id="profilePicture" alt="Profile Picture">
+      <p id="userId"></p>
+      <p id="displayName"></p>
+    </div>
+    <form onsubmit="submitForm(); return false;">
+      <label for="refinery">Refinery:</label>
+      <input type="text" id="refinery" name="refinery">
+
+      <label for="buyerName">Buyer Name:</label>
+      <input type="text" id="buyerName" name="buyerName">
+
+      <label for="productType">Product Type:</label>
+      <input type="text" id="productType" name="productType">
+
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="quantity" name="quantity">
+
+      <label for="units">Units:</label>
+      <input type="number" id="units" name="units">
+
+      <label for="destination">Destination:</label>
+      <input type="text" id="destination" name="destination">
+
+      <label for="targetDate">Target Date:</label>
+      <input type="datetime-local" id="targetDate" name="targetDate">
+
+      <input type="submit" value="Send Order">
+    </form>
   </div>
-  <form onsubmit="submitForm(); return false;">
-    <label for="refinery">Refinery:</label><br>
-    <input type="text" id="refinery" name="refinery"><br>
-    <label for="buyerName">Buyer Name:</label><br>
-    <input type="text" id="buyerName" name="buyerName"><br>
-    <label for="productType">Product Type:</label><br>
-    <input type="text" id="productType" name="productType"><br>
-    <label for="quantity">Quantity:</label><br>
-    <input type="number" id="quantity" name="quantity"><br>
-    <label for="units">Units:</label><br>
-    <input type="number" id="units" name="units"><br>
-    <label for="destination">Destination:</label><br>
-    <input type="text" id="destination" name="destination"><br>
-    <label for="targetDate">Target Date:</label><br>
-    <input type="datetime-local" id="targetDate" name="targetDate"><br><br>
-    <input type="submit" value="Send Order">
-  </form>
 </body>
 </html>
