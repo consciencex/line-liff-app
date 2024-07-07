@@ -105,6 +105,18 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
+        console.log('Form Data:', {
+          line_id: userId,
+          line_name: displayName,
+          refinery: refinery,
+          buyerName: buyerName,
+          productType: productType,
+          quantity: quantity,
+          units: units,
+          destination: destination,
+          targetDate: targetDate
+        });
+
         const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders', {
           method: 'POST',
           headers: {
@@ -124,8 +136,12 @@
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          const errorDetails = await response.text();
+          throw new Error('Network response was not ok: ' + errorDetails);
         }
+
+        const result = await response.json();
+        console.log('Xano Response:', result);
 
         // Send Flex Message after successful submission
         const flexMessage = {
