@@ -3,13 +3,14 @@
 <head>
   <title>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       background-color: #f4f4f9;
     }
-    h1 {
+    h2, h3, h5 {
       text-align: center;
     }
     .form-container {
@@ -20,29 +21,8 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    .form-container label {
-      font-weight: bold;
-      margin-top: 10px;
-      display: block;
-    }
-    .form-container select, .form-container input {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0 20px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    .form-container input[type=submit] {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2em;
-      padding: 12px;
-    }
-    .form-container input[type=submit]:hover {
-      background-color: #45a049;
+    .form-group {
+      margin-bottom: 10px;
     }
     .profile-info {
       text-align: center;
@@ -60,6 +40,9 @@
       display: none;
       text-align: center;
       margin-top: 20px;
+    }
+    .btn-primary {
+      width: 100%;
     }
   </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -92,12 +75,12 @@
           throw new Error('Network response was not ok');
         }
         provinceData = await response.json();
-        const destinationSelect = document.getElementById('destination');
+        const provinceSelect = document.getElementById('province');
         provinceData.forEach(province => {
           const option = document.createElement('option');
           option.value = province.name_th;
           option.text = province.name_th;
-          destinationSelect.add(option);
+          provinceSelect.add(option);
         });
       } catch (error) {
         console.error('Error fetching province data:', error);
@@ -105,9 +88,9 @@
     }
 
     function populateDistricts() {
-      const destinationSelect = document.getElementById('destination');
+      const provinceSelect = document.getElementById('province');
       const districtSelect = document.getElementById('district');
-      const selectedProvince = destinationSelect.value;
+      const selectedProvince = provinceSelect.value;
       districtSelect.innerHTML = '<option value="">เลือกอำเภอ</option>';
       const province = provinceData.find(prov => prov.name_th === selectedProvince);
       if (province) {
@@ -122,10 +105,10 @@
     }
 
     function populateSubDistricts() {
-      const destinationSelect = document.getElementById('destination');
+      const provinceSelect = document.getElementById('province');
       const districtSelect = document.getElementById('district');
       const subDistrictSelect = document.getElementById('subDistrict');
-      const selectedProvince = destinationSelect.value;
+      const selectedProvince = provinceSelect.value;
       const selectedDistrict = districtSelect.value;
       subDistrictSelect.innerHTML = '<option value="">เลือกตำบล</option>';
       const province = provinceData.find(prov => prov.name_th === selectedProvince);
@@ -153,7 +136,7 @@
         const productType = document.getElementById('productType').value;
         const quantity = document.getElementById('quantity').value;
         const units = document.getElementById('units').value;
-        const destination = document.getElementById('destination').value;
+        const province = document.getElementById('province').value;
         const district = document.getElementById('district').value;
         const subDistrict = document.getElementById('subDistrict').value;
         const targetDate = document.getElementById('targetDate').value;
@@ -171,7 +154,7 @@
           productType: productType,
           quantity: quantity,
           units: units,
-          destination: destination,
+          province: province,
           district: district,
           subDistrict: subDistrict,
           targetDate: targetDate
@@ -191,7 +174,7 @@
             productType: productType,
             quantity: quantity,
             units: units,
-            destination: destination,
+            province: province,
             district: district,
             subDistrict: subDistrict,
             targetDate: targetDate
@@ -245,7 +228,7 @@
                   ]},
                   { type: "box", layout: "baseline", spacing: "sm", contents: [
                     { type: "text", text: "ปลายทางจังหวัด:", color: "#aaaaaa", size: "sm", flex: 1 },
-                    { type: "text", text: destination, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: province, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
                   { type: "box", layout: "baseline", spacing: "sm", contents: [
                     { type: "text", text: "อำเภอ:", color: "#aaaaaa", size: "sm", flex: 1 },
@@ -303,7 +286,9 @@
   </script>
 </head>
 <body>
-  <h1>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</h1>
+  <h2>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</h2>
+  <h3>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h3>
+  <h5>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h5>
   <div class="form-container">
     <div class="profile-info">
       <img id="profilePicture" alt="Profile Picture">
@@ -311,46 +296,56 @@
       <p id="userId" style="display: none;"></p>
     </div>
     <form onsubmit="submitForm(); return false;">
-      <label for="receiveDate">วันที่รับ:</label>
-      <input type="date" id="receiveDate" name="receiveDate">
-
-      <label for="refinery">Refinery:</label>
-      <select id="refinery" name="refinery"></select>
-
-      <label for="productType">ประเภท:</label>
-      <select id="productType" name="productType"></select>
-
-      <label for="buyerName">ตั๋ว:</label>
-      <input type="text" id="buyerName" name="buyerName">
-
-      <label for="quantity">น้ำหนักบรรทุก:</label>
-      <input type="number" id="quantity" name="quantity">
-
-      <label for="units">หน่วย:</label>
-      <select id="units" name="units">
-        <option value="ตัน">ตัน</option>
-        <option value="ลิตร">ลิตร</option>
-      </select>
-
-      <label for="destination">ปลายทางจังหวัด:</label>
-      <select id="destination" name="destination" onchange="populateDistricts()">
-        <option value="">เลือกจังหวัด</option>
-      </select>
-
-      <label for="district">อำเภอ:</label>
-      <select id="district" name="district" onchange="populateSubDistricts()">
-        <option value="">เลือกอำเภอ</option>
-      </select>
-
-      <label for="subDistrict">ตำบล:</label>
-      <select id="subDistrict" name="subDistrict">
-        <option value="">เลือกตำบล</option>
-      </select>
-
-      <label for="targetDate">วันที่ส่ง:</label>
-      <input type="date" id="targetDate" name="targetDate">
-
-      <input type="submit" id="submitBtn" value="ยืนยันคำสั่ง">
+      <div class="form-group">
+        <label for="receiveDate">วันที่รับ:</label>
+        <input type="date" class="form-control" id="receiveDate" name="receiveDate">
+      </div>
+      <div class="form-group">
+        <label for="refinery">Refinery:</label>
+        <select class="form-control" id="refinery" name="refinery"></select>
+      </div>
+      <div class="form-group">
+        <label for="productType">ประเภท:</label>
+        <select class="form-control" id="productType" name="productType"></select>
+      </div>
+      <div class="form-group">
+        <label for="buyerName">ตั๋ว:</label>
+        <input type="text" class="form-control" id="buyerName" name="buyerName">
+      </div>
+      <div class="form-group">
+        <label for="quantity">น้ำหนักบรรทุก:</label>
+        <input type="number" class="form-control" id="quantity" name="quantity">
+      </div>
+      <div class="form-group">
+        <label for="units">หน่วย:</label>
+        <select class="form-control" id="units" name="units">
+          <option value="ตัน">ตัน</option>
+          <option value="ลิตร">ลิตร</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="province">ปลายทางจังหวัด:</label>
+        <select class="form-control" id="province" name="province" onchange="populateDistricts()">
+          <option value="">เลือกจังหวัด</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="district">อำเภอ:</label>
+        <select class="form-control" id="district" name="district" onchange="populateSubDistricts()">
+          <option value="">เลือกอำเภอ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="subDistrict">ตำบล:</label>
+        <select class="form-control" id="subDistrict" name="subDistrict">
+          <option value="">เลือกตำบล</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="targetDate">วันที่ส่ง:</label>
+        <input type="date" class="form-control" id="targetDate" name="targetDate">
+      </div>
+      <input type="submit" class="btn btn-primary" id="submitBtn" value="ยืนยันคำสั่ง">
     </form>
     <div id="loading" class="loading">
       <p>Processing...</p>
