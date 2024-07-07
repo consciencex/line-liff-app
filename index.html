@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Order Form</title>
+  <title>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -54,10 +54,18 @@
     .profile-info p {
       margin: 5px 0;
     }
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
   </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
     async function submitForm() {
+      document.getElementById('submitBtn').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+
       const refinery = document.getElementById('refinery').value;
       const buyerName = document.getElementById('buyerName').value;
       const productType = document.getElementById('productType').value;
@@ -146,6 +154,8 @@
       } catch (error) {
         console.error('Error:', error);
         alert('Failed to submit the order: ' + error.message);
+        document.getElementById('submitBtn').style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
       }
     }
 
@@ -171,7 +181,7 @@
   </script>
 </head>
 <body>
-  <h1>Order Form</h1>
+  <h1>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</h1>
   <div class="form-container">
     <div class="profile-info">
       <img id="profilePicture" alt="Profile Picture">
@@ -200,8 +210,11 @@
       <label for="targetDate">Target Date:</label>
       <input type="datetime-local" id="targetDate" name="targetDate">
 
-      <input type="submit" value="Send Order">
+      <input type="submit" id="submitBtn" value="ยืนยันคำสั่ง">
     </form>
+    <div id="loading" class="loading">
+      <p>Processing...</p>
+    </div>
   </div>
 </body>
 </html>
