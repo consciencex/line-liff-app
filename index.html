@@ -102,7 +102,7 @@
           const profile = await liff.getProfile();
           document.getElementById('userId').textContent = `LINE ID: ${profile.userId}`;
           document.getElementById('displayName').textContent = `Display Name: ${profile.displayName}`;
-          document.getElementById('buyerName').value = profile.displayName;
+          document.getElementById('profilePicture').src = profile.pictureUrl;
         }
       } catch (error) {
         console.error('LIFF initialization failed ', error);
@@ -114,6 +114,7 @@
 <body>
   <h1>Order Form</h1>
   <div>
+    <img id="profilePicture" style="width: 100px; height: 100px; border-radius: 50%;" alt="Profile Picture">
     <p id="userId"></p>
     <p id="displayName"></p>
   </div>
