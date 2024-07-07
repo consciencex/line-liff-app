@@ -317,7 +317,8 @@
 
         await liff.init({
           liffId: '2005786037-ZwX56JJQ',
-          withLoginOnExternalBrowser: true
+          withLoginOnExternalBrowser: true,
+          withScopes: ["chat_message.write"]
         });
         if (!liff.isLoggedIn()) {
           liff.login();
