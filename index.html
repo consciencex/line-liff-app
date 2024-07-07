@@ -317,8 +317,7 @@
 
         await liff.init({
           liffId: '2005786037-ZwX56JJQ',
-          withLoginOnExternalBrowser: true,
-          withScopes: ["chat_message.write"]
+          withLoginOnExternalBrowser: true
         });
         if (!liff.isLoggedIn()) {
           liff.login();
@@ -345,9 +344,8 @@
   </script>
 </head>
 <body>
-  <h2>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</h2>
-  <h3>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h3>
-  <h5>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h5>
+  <h5>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h5>
+  <h7>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h7>
   <div id="loading" class="loading">
     <p>Loading...</p>
   </div>
@@ -409,9 +407,6 @@
       </div>
       <input type="submit" class="btn btn-primary" id="submitBtn" value="ยืนยันคำสั่ง">
     </form>
-    <div id="loading" class="loading">
-      <p>Processing...</p>
-    </div>
   </div>
 </body>
 </html>
