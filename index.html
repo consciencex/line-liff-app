@@ -20,6 +20,7 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: none; /* Initially hidden */
     }
     .form-group {
       margin-bottom: 10px;
@@ -37,7 +38,6 @@
       margin: 5px 0;
     }
     .loading {
-      display: none;
       text-align: center;
       margin-top: 20px;
     }
@@ -281,7 +281,7 @@
                   action: {
                     type: "uri",
                     label: "แก้ไข",
-                    uri: `https://liff.line.me/YOUR_LIFF_ID?orderId=${result.id}` // Replace with the actual LIFF URL for editing
+                    uri: `https://liff.line.me/2005786037-ZwX56JJQ?orderId=${result.id}` // Replace with the actual LIFF URL for editing
                   }
                 },
                 {
@@ -312,6 +312,9 @@
 
     window.onload = async function() {
       try {
+        document.getElementById('loading').style.display = 'block';
+        document.querySelector('.form-container').style.display = 'none';
+
         await liff.init({
           liffId: '2005786037-ZwX56JJQ',
           withLoginOnExternalBrowser: true
@@ -329,9 +332,13 @@
         await fetchDropdownData('https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_refinery', 'refinery', 'refinery');
         await fetchDropdownData('https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_product', 'productType', 'productType');
         await fetchProvinceData();
+
+        document.getElementById('loading').style.display = 'none';
+        document.querySelector('.form-container').style.display = 'block';
       } catch (error) {
         console.error('LIFF initialization failed', error);
         alert('LIFF initialization failed: ' + error.message);
+        document.getElementById('loading').style.display = 'none';
       }
     };
   </script>
@@ -340,6 +347,9 @@
   <h2>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</h2>
   <h3>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h3>
   <h5>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h5>
+  <div id="loading" class="loading">
+    <p>Loading...</p>
+  </div>
   <div class="form-container">
     <div class="profile-info">
       <img id="profilePicture" alt="Profile Picture">
