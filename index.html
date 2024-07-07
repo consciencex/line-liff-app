@@ -69,13 +69,13 @@
         document.getElementById('submitBtn').style.display = 'none';
         document.getElementById('loading').style.display = 'block';
 
-        const refinery = document.getElementById('refinery') ? document.getElementById('refinery').value : '';
-        const buyerName = document.getElementById('buyerName') ? document.getElementById('buyerName').value : '';
-        const productType = document.getElementById('productType') ? document.getElementById('productType').value : '';
-        const quantity = document.getElementById('quantity') ? document.getElementById('quantity').value : '';
-        const units = document.getElementById('units') ? document.getElementById('units').value : '';
-        const destination = document.getElementById('destination') ? document.getElementById('destination').value : '';
-        const targetDate = document.getElementById('targetDate') ? document.getElementById('targetDate').value : '';
+        const refinery = document.getElementById('refinery').value;
+        const buyerName = document.getElementById('buyerName').value;
+        const productType = document.getElementById('productType').value;
+        const quantity = document.getElementById('quantity').value;
+        const units = document.getElementById('units').value;
+        const destination = document.getElementById('destination').value;
+        const targetDate = document.getElementById('targetDate').value;
 
         const profile = await liff.getProfile();
         const userId = profile.userId;
@@ -207,6 +207,9 @@
       <p id="userId" style="display: none;"></p>
     </div>
     <form onsubmit="submitForm(); return false;">
+      <label for="refinery">Refinery:</label>
+      <input type="text" id="refinery" name="refinery">
+
       <label for="productType">ประเภท:</label>
       <select id="productType" name="productType">
         <option value="Type A">Type A</option>
