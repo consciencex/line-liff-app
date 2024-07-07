@@ -158,6 +158,10 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
+        if (!receiveDate) {
+          throw new Error('Receive date is required.');
+        }
+
         console.log('Form Data:', {
           line_id: userId,
           line_name: displayName,
@@ -277,7 +281,7 @@
                   action: {
                     type: "uri",
                     label: "แก้ไข",
-                    uri: "https://liff.line.me/2005786037-ZwX56JJQ" // Replace with the actual LIFF URL for editing
+                    uri: `https://liff.line.me/YOUR_LIFF_ID?orderId=${result.id}` // Replace with the actual LIFF URL for editing
                   }
                 },
                 {
@@ -287,7 +291,7 @@
                   action: {
                     type: "uri",
                     label: "ลบ",
-                    uri: "https://liff.line.me/2005786037-ZwX56JJQ" // Replace with the actual LIFF URL for deletion
+                    uri: `https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders/${result.id}` // Replace with the actual LIFF URL for deletion
                   }
                 }
               ]
@@ -345,7 +349,7 @@
     <form onsubmit="submitForm(); return false;">
       <div class="form-group">
         <label for="receiveDate">วันที่รับ:</label>
-        <input type="date" class="form-control" id="receiveDate" name="receiveDate">
+        <input type="date" class="form-control" id="receiveDate" name="receiveDate" required>
       </div>
       <div class="form-group">
         <label for="refinery">Refinery:</label>
