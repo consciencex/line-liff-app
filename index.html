@@ -44,6 +44,14 @@
     .btn-primary {
       width: 100%;
     }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .btn-edit, .btn-delete {
+      width: 48%;
+    }
   </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
@@ -125,6 +133,11 @@
       }
     }
 
+    function formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return new Date(date).toLocaleDateString('th-TH', options);
+    }
+
     async function submitForm() {
       try {
         document.getElementById('submitBtn').style.display = 'none';
@@ -195,6 +208,13 @@
           altText: "ยืนยันคำสั่งสำเร็จ !",
           contents: {
             type: "bubble",
+            hero: {
+              type: "image",
+              url: "https://example.com/icon.png",
+              size: "full",
+              aspectRatio: "20:13",
+              aspectMode: "cover"
+            },
             body: {
               type: "box",
               layout: "vertical",
@@ -202,47 +222,74 @@
                 { type: "text", text: "ยืนยันคำสั่งสำเร็จ !", weight: "bold", size: "xl" },
                 { type: "text", text: "กรุณารอหมายเลขคำสั่งประมาณ 5 นาที", size: "md", color: "#999999", margin: "md" },
                 { type: "box", layout: "vertical", margin: "lg", spacing: "sm", contents: [
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: receiveDate, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: formatDate(receiveDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "Refinery:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: refinery, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "Refinery:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: refinery, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: buyerName, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: buyerName, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "Product Type:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: productType, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "Product Type:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: productType, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "น้ำหนักบรรทุก:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: quantity, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "น้ำหนักบรรทุก:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: quantity, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "หน่วย:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: units, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "หน่วย:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: units, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "ปลายทางจังหวัด:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: province, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "ปลายทางจังหวัด:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: province, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "อำเภอ:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: district, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "อำเภอ:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: district, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "ตำบล:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: subDistrict, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "ตำบล:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: subDistrict, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
-                  { type: "box", layout: "vertical", spacing: "sm", contents: [
-                    { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", wrap: true },
-                    { type: "text", text: targetDate, wrap: true, color: "#666666", size: "sm" }
+                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
+                    { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]}
                 ]}
+              ]
+            },
+            footer: {
+              type: "box",
+              layout: "horizontal",
+              spacing: "md",
+              contents: [
+                {
+                  type: "button",
+                  style: "primary",
+                  color: "#007BFF",
+                  action: {
+                    type: "uri",
+                    label: "แก้ไข",
+                    uri: "https://liff.line.me/2005786037-ZwX56JJQ" // Replace with the actual LIFF URL for editing
+                  }
+                },
+                {
+                  type: "button",
+                  style: "primary",
+                  color: "#FF0000",
+                  action: {
+                    type: "uri",
+                    label: "ลบ",
+                    uri: "https://liff.line.me/2005786037-ZwX56JJQ" // Replace with the actual LIFF URL for deletion
+                  }
+                }
               ]
             }
           }
