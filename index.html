@@ -61,35 +61,22 @@
       text-align: center;
       margin-top: 20px;
     }
-    .progress-bar {
-      display: none;
-      width: 100%;
-      background-color: #f3f3f3;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-    .progress-bar div {
-      width: 0;
-      height: 20px;
-      background-color: #4CAF50;
-    }
   </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
     async function submitForm() {
-      document.getElementById('submitBtn').style.display = 'none';
-      document.getElementById('loading').style.display = 'block';
-
-      const refinery = document.getElementById('refinery').value;
-      const buyerName = document.getElementById('buyerName').value;
-      const productType = document.getElementById('productType').value;
-      const quantity = document.getElementById('quantity').value;
-      const units = document.getElementById('units').value;
-      const destination = document.getElementById('destination').value;
-      const targetDate = document.getElementById('targetDate').value;
-
       try {
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('loading').style.display = 'block';
+
+        const refinery = document.getElementById('refinery') ? document.getElementById('refinery').value : '';
+        const buyerName = document.getElementById('buyerName') ? document.getElementById('buyerName').value : '';
+        const productType = document.getElementById('productType') ? document.getElementById('productType').value : '';
+        const quantity = document.getElementById('quantity') ? document.getElementById('quantity').value : '';
+        const units = document.getElementById('units') ? document.getElementById('units').value : '';
+        const destination = document.getElementById('destination') ? document.getElementById('destination').value : '';
+        const targetDate = document.getElementById('targetDate') ? document.getElementById('targetDate').value : '';
+
         const profile = await liff.getProfile();
         const userId = profile.userId;
         const displayName = profile.displayName;
