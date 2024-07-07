@@ -234,9 +234,8 @@
             type: "bubble",
             hero: {
               type: "image",
-              url: "https://www.google.com/imgres?imgurl=https%3A%2F%2Fcdn-icons-png.freepik.com%2F256%2F14025%2F14025690.png&tbnid=lEfunEWVTXlzNM&vet=12ahUKEwiukMHBuJWHAxV8s2MGHbe4Cv4QMygRegQIARBl..i&imgrefurl=https%3A%2F%2Fwww.freepik.com%2Ficon%2Fcheck_5610944&docid=GTbRG0DO78JmIM&w=256&h=256&q=icon%20copy%20image%20url%20%22correct%22&ved=2ahUKEwiukMHBuJWHAxV8s2MGHbe4Cv4QMygRegQIARBl",
-              size: "full",
-              aspectRatio: "20:13",
+              url: "https://cdn-icons-png.freepik.com/512/5610/5610944.png",
+              size: "xxs",
               aspectMode: "cover"
             },
             body: {
@@ -251,7 +250,7 @@
                     { type: "text", text: formatDate(receiveDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
                   { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "Refinery:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
                     { type: "text", text: refinery, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
                   { type: "box", layout: "horizontal", spacing: "sm", contents: [
@@ -259,7 +258,7 @@
                     { type: "text", text: buyerName, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
                   { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "Product Type:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: "ประเภท:", color: "#aaaaaa", size: "sm", flex: 2 },
                     { type: "text", text: productType, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]},
                   { type: "box", layout: "horizontal", spacing: "sm", contents: [
@@ -344,7 +343,6 @@
     <div class="progress-bar">
       <div class="progress-bar-inner"></div>
     </div>
-    <p>Loading...</p>
   </div>
   <div class="form-container">
     <div class="profile-info">
@@ -358,7 +356,7 @@
         <input type="date" class="form-control" id="receiveDate" name="receiveDate" required>
       </div>
       <div class="form-group">
-        <label for="refinery">Refinery:</label>
+        <label for="refinery">โรงกลั่น:</label>
         <select class="form-control" id="refinery" name="refinery"></select>
       </div>
       <div class="form-group">
@@ -408,7 +406,6 @@
       <div class="progress-bar">
         <div class="progress-bar-inner"></div>
       </div>
-      <p>Processing...</p>
     </div>
   </div>
 </body>
