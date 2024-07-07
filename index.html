@@ -40,8 +40,7 @@
           throw new Error('Network response was not ok');
         }
 
-        alert('Order submitted successfully!');
-
+        // Send Flex Message after successful submission
         const flexMessage = {
           type: "flex",
           altText: "Order Summary",
@@ -89,9 +88,10 @@
 
         await liff.sendMessages([flexMessage]);
         liff.closeWindow();
+
       } catch (error) {
         console.error('Error:', error);
-        alert('Failed to submit the order');
+        alert('Failed to submit the order: ' + error.message);
       }
     }
 
@@ -107,7 +107,7 @@
           document.getElementById('profilePicture').src = profile.pictureUrl;
         }
       } catch (error) {
-        console.error('LIFF initialization failed ', error);
+        console.error('LIFF initialization failed', error);
         alert('LIFF initialization failed: ' + error.message);
       }
     };
