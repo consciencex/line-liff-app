@@ -80,17 +80,6 @@
     async function submitForm() {
       document.getElementById('submitBtn').style.display = 'none';
       document.getElementById('loading').style.display = 'block';
-      document.getElementById('progressBar').style.display = 'block';
-      const progressBar = document.getElementById('progressBarInner');
-      let width = 0;
-      const interval = setInterval(() => {
-        if (width >= 100) {
-          clearInterval(interval);
-        } else {
-          width++;
-          progressBar.style.width = width + '%';
-        }
-      }, 50);
 
       const refinery = document.getElementById('refinery').value;
       const buyerName = document.getElementById('buyerName').value;
@@ -198,7 +187,6 @@
         alert('Failed to submit the order: ' + error.message);
         document.getElementById('submitBtn').style.display = 'block';
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('progressBar').style.display = 'none';
       }
     }
 
@@ -266,9 +254,6 @@
     </form>
     <div id="loading" class="loading">
       <p>Processing...</p>
-      <div class="progress-bar" id="progressBar">
-        <div id="progressBarInner"></div>
-      </div>
     </div>
   </div>
 </body>
