@@ -268,33 +268,6 @@
                   ]}
                 ]}
               ]
-            },
-            footer: {
-              type: "box",
-              layout: "horizontal",
-              spacing: "md",
-              contents: [
-                {
-                  type: "button",
-                  style: "primary",
-                  color: "#007BFF",
-                  action: {
-                    type: "uri",
-                    label: "แก้ไข",
-                    uri: `https://liff.line.me/2005786037-ZwX56JJQ?orderId=${result.id}` // Replace with the actual LIFF URL for editing
-                  }
-                },
-                {
-                  type: "button",
-                  style: "primary",
-                  color: "#FF0000",
-                  action: {
-                    type: "uri",
-                    label: "ลบ",
-                    uri: `https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders/${result.id}` // Replace with the actual LIFF URL for deletion
-                  }
-                }
-              ]
             }
           }
         };
@@ -317,7 +290,8 @@
 
         await liff.init({
           liffId: '2005786037-ZwX56JJQ',
-          withLoginOnExternalBrowser: true
+          withLoginOnExternalBrowser: true,
+          withScopes: ["chat_message.write"]
         });
         if (!liff.isLoggedIn()) {
           liff.login();
@@ -344,8 +318,9 @@
   </script>
 </head>
 <body>
-  <h5>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h5>
-  <h7>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h7>
+  <h2>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</h2>
+  <h3>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h3>
+  <h5>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h5>
   <div id="loading" class="loading">
     <p>Loading...</p>
   </div>
@@ -407,6 +382,9 @@
       </div>
       <input type="submit" class="btn btn-primary" id="submitBtn" value="ยืนยันคำสั่ง">
     </form>
+    <div id="loading" class="loading">
+      <p>Processing...</p>
+    </div>
   </div>
 </body>
 </html>
