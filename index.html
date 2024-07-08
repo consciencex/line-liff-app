@@ -45,7 +45,7 @@
       margin-top: 20px;
     }
     .btn-primary {
-      width: 100%; /* Set button width to 100% */
+      width: 100%; /* Increased button size by 20% */
     }
     .btn-group {
       display: flex;
@@ -77,6 +77,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
     let provinceData;
+    let orderId = null; // To store orderId for edit
 
     async function fetchDropdownData(url, fieldId, key) {
       try {
@@ -199,7 +200,7 @@
           throw new Error('Receive date is required.');
         }
 
-        console.log('Form Data:', {
+        const formData = {
           line_id: userId,
           line_name: displayName,
           receiveDate: receiveDate,
@@ -212,28 +213,26 @@
           district: district,
           subDistrict: subDistrict,
           targetDate: targetDate
-        });
+        };
 
-        const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            line_id: userId,
-            line_name: displayName,
-            receiveDate: receiveDate,
-            refinery: refinery,
-            buyerName: buyerName,
-            productType: productType,
-            quantity: quantity,
-            units: units,
-            province: province,
-            district: district,
-            subDistrict: subDistrict,
-            targetDate: targetDate
-          })
-        });
+        let response;
+        if (orderId) {
+          response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders/${orderId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+        } else {
+          response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+        }
 
         if (!response.ok) {
           const errorDetails = await response.text();
@@ -507,9 +506,9 @@
                   style: "primary",
                   color: "#007BFF",
                   action: {
-                    type: "uri",
+                    type: "postback",
                     label: "แก้ไข",
-                    uri: `https://liff.line.me/2005786037-ZwX56JJQ?orderId=${result.id}`
+                    data: `edit-${result.id}`
                   }
                 },
                 {
@@ -517,9 +516,9 @@
                   style: "primary",
                   color: "#FF0000",
                   action: {
-                    type: "uri",
+                    type: "postback",
                     label: "ลบ",
-                    uri: `https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders/${result.id}`
+                    data: `delete-${result.id}`
                   }
                 }
               ]
@@ -535,6 +534,55 @@
         alert('Failed to submit the order: ' + error.message);
         document.getElementById('submitBtn').disabled = false;
         document.getElementById('awaitIcon').style.display = 'none';
+      }
+    }
+
+    async function handlePostback(event) {
+      const data = event.data;
+      const [action, id] = data.split('-');
+
+      if (action === 'edit') {
+        try {
+          const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders/${id}`);
+          if (!response.ok) {
+            const errorDetails = await response.text();
+            throw new Error('Network response was not ok: ' + errorDetails);
+          }
+
+          const order = await response.json();
+          document.getElementById('receiveDate').value = order.receiveDate;
+          document.getElementById('refinery').value = order.refinery;
+          document.getElementById('buyerName').value = order.buyerName;
+          document.getElementById('productType').value = order.productType;
+          document.getElementById('quantity').value = order.quantity;
+          document.getElementById('units').value = order.units;
+          document.getElementById('province').value = order.province;
+          document.getElementById('district').value = order.district;
+          document.getElementById('subDistrict').value = order.subDistrict;
+          document.getElementById('targetDate').value = order.targetDate;
+          orderId = id; // Store orderId for patching
+
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to fetch the order: ' + error.message);
+        }
+      } else if (action === 'delete') {
+        try {
+          const response = await fetch(`https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders/${id}`, {
+            method: 'DELETE'
+          });
+          if (!response.ok) {
+            const errorDetails = await response.text();
+            throw new Error('Network response was not ok: ' + errorDetails);
+          }
+
+          alert('ดำเนินการลบคำสั่งก่อนหน้าเรียบร้อยแล้ว');
+          orderId = null; // Reset orderId
+
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to delete the order: ' + error.message);
+        }
       }
     }
 
@@ -563,6 +611,15 @@
 
         document.getElementById('loading').style.display = 'none';
         document.querySelector('.form-container').style.display = 'block';
+
+        liff.ready.then(() => {
+          liff.getContext().then(context => {
+            if (context.type === 'postback') {
+              handlePostback(context);
+            }
+          });
+        });
+
       } catch (error) {
         console.error('LIFF initialization failed', error);
         alert('LIFF initialization failed: ' + error.message);
