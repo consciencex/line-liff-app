@@ -73,6 +73,11 @@
         width: 100%;
       }
     }
+    .await-icon {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
@@ -162,7 +167,7 @@
     async function submitForm() {
       try {
         document.getElementById('submitBtn').style.display = 'none';
-        document.getElementById('loading').style.display = 'block';
+        document.getElementById('awaitIcon').style.display = 'block';
 
         const receiveDate = document.getElementById('receiveDate').value;
         const refinery = document.getElementById('refinery').value;
@@ -183,7 +188,7 @@
         if (!receiveDate || !refinery || !buyerName || !productType || !quantity || !units || !province || !district || !subDistrict || !targetDate) {
           alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
           document.getElementById('submitBtn').style.display = 'block';
-          document.getElementById('loading').style.display = 'none';
+          document.getElementById('awaitIcon').style.display = 'none';
           return;
         }
 
@@ -241,58 +246,158 @@
               type: "box",
               layout: "vertical",
               contents: [
-                { type: "box", layout: "horizontal", contents: [
-                  {
-                    type: "image",
-                    url: "https://cdn-icons-png.freepik.com/512/5610/5610944.png",
-                    size: "xxs",
-                    aspectMode: "cover"
-                  },
-                  { type: "text", text: "ยืนยันคำสั่งสำเร็จ !", weight: "bold", size: "xl", margin: "md" }
-                ]},
-                { type: "text", text: "ระบบจะส่งข้อมูลพนักงานขนส่งและประเภทรถบรรทุกให้ท่านภายใน 1 วันทำการ", size: "md", color: "#999999", margin: "md" },
-                { type: "box", layout: "vertical", margin: "lg", spacing: "sm", contents: [
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: formatDate(receiveDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: refinery, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: buyerName, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "ประเภท:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: productType, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "น้ำหนักบรรทุก:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: quantity, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "หน่วย:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: units, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "ปลายทางจังหวัด:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: province, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "อำเภอ:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: district, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "ตำบล:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: subDistrict, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]},
-                  { type: "box", layout: "horizontal", spacing: "sm", contents: [
-                    { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]}
-                ]}
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  contents: [
+                    {
+                      type: "image",
+                      url: "https://cdn-icons-png.freepik.com/512/5610/5610944.png",
+                      size: "xxs",
+                      aspectMode: "cover"
+                    },
+                    { 
+                      type: "text", 
+                      text: "ยืนยันคำสั่งสำเร็จ !", 
+                      weight: "bold", 
+                      size: "xl", 
+                      margin: "md",
+                      align: "center"
+                    }
+                  ], justifyContent: "center" 
+                },
+                { 
+                  type: "text", 
+                  text: "ระบบจะส่งข้อมูลพนักงานขนส่งและประเภทรถบรรทุกให้ท่านภายใน 1 วันทำการ", 
+                  size: "md", 
+                  color: "#999999", 
+                  margin: "md" 
+                },
+                {
+                  type: "box",
+                  layout: "vertical",
+                  margin: "lg",
+                  spacing: "sm",
+                  contents: [
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: formatDate(receiveDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: refinery, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: buyerName, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "ประเภท:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: productType, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "น้ำหนักบรรทุก:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: quantity, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "หน่วย:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: units, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "ปลายทางจังหวัด:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: province, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "อำเภอ:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: district, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "ตำบล:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: subDistrict, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    },
+                    {
+                      type: "box",
+                      layout: "horizontal",
+                      spacing: "sm",
+                      contents: [
+                        { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", flex: 2 },
+                        { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "md",
+                  contents: [
+                    {
+                      type: "button",
+                      style: "primary",
+                      color: "#007BFF",
+                      action: {
+                        type: "uri",
+                        label: "แก้ไข",
+                        uri: `https://liff.line.me/2005786037-ZwX56JJQ?orderId=${result.id}` // Replace with the actual LIFF URL for editing
+                      }
+                    },
+                    {
+                      type: "button",
+                      style: "primary",
+                      color: "#FF0000",
+                      action: {
+                        type: "uri",
+                        label: "ลบ",
+                        uri: `https://x8ki-letl-twmt.n7.xano.io/api:F-P_0CWn/spn_orders/${result.id}` // Replace with the actual LIFF URL for deletion
+                      }
+                    }
+                  ]
+                }
               ]
             }
           }
@@ -305,7 +410,7 @@
         console.error('Error:', error);
         alert('Failed to submit the order: ' + error.message);
         document.getElementById('submitBtn').style.display = 'block';
-        document.getElementById('loading').style.display = 'none';
+        document.getElementById('awaitIcon').style.display = 'none';
       }
     }
 
@@ -316,8 +421,7 @@
 
         await liff.init({
           liffId: '2005786037-ZwX56JJQ',
-          withLoginOnExternalBrowser: true,
-          withScopes: ["chat_message.write"]
+          withLoginOnExternalBrowser: true
         });
         if (!liff.isLoggedIn()) {
           liff.login();
@@ -349,9 +453,7 @@
     <h10>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h10>
   </div>
   <div id="loading" class="loading">
-    <div class="progress-bar">
-      <div class="progress-bar-inner"></div>
-    </div>
+    <p>โปรดรอสักครู่...</p>
   </div>
   <div class="form-container">
     <div class="profile-info">
@@ -378,7 +480,7 @@
       </div>
       <div class="form-group">
         <label for="quantity">น้ำหนักบรรทุก:</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" step="0.001">
+        <input type="number" step="0.001" class="form-control" id="quantity" name="quantity">
       </div>
       <div class="form-group">
         <label for="units">หน่วย:</label>
@@ -411,6 +513,12 @@
       </div>
       <input type="submit" class="btn btn-primary" id="submitBtn" value="ยืนยันคำสั่ง">
     </form>
+    <div id="awaitIcon" class="await-icon">
+      <p>โปรดรอสักครู่...</p>
+      <div class="progress-bar">
+        <div class="progress-bar-inner"></div>
+      </div>
+    </div>
   </div>
 </body>
 </html>
