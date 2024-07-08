@@ -10,6 +10,15 @@
       padding: 20px;
       background-color: #f4f4f9;
     }
+    .title-container {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 80%;
+    }
     h6, h10 {
       text-align: center;
     }
@@ -43,14 +52,6 @@
     }
     .btn-primary {
       width: 100%;
-    }
-    .btn-group {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    .btn-edit, .btn-delete {
-      width: 48%;
     }
     .progress-bar {
       display: none;
@@ -167,7 +168,7 @@
         const refinery = document.getElementById('refinery').value;
         const buyerName = document.getElementById('buyerName').value;
         const productType = document.getElementById('productType').value;
-        const quantity = document.getElementById('quantity').value;
+        const quantity = parseFloat(document.getElementById('quantity').value).toFixed(3);
         const units = document.getElementById('units').value;
         const province = document.getElementById('province').value;
         const district = document.getElementById('district').value;
@@ -178,8 +179,12 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
-        if (!receiveDate) {
-          throw new Error('Receive date is required.');
+        // Validate form fields
+        if (!receiveDate || !refinery || !buyerName || !productType || !quantity || !units || !province || !district || !subDistrict || !targetDate) {
+          alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+          document.getElementById('submitBtn').style.display = 'block';
+          document.getElementById('loading').style.display = 'none';
+          return;
         }
 
         console.log('Form Data:', {
@@ -232,18 +237,20 @@
           altText: "ยืนยันคำสั่งสำเร็จ !",
           contents: {
             type: "bubble",
-            hero: {
-              type: "image",
-              url: "https://cdn-icons-png.freepik.com/512/5610/5610944.png",
-              size: "xxs",
-              aspectMode: "cover"
-            },
             body: {
               type: "box",
               layout: "vertical",
               contents: [
-                { type: "text", text: "ยืนยันคำสั่งสำเร็จ !", weight: "bold", size: "xl" },
-                { type: "text", text: "กรุณารอหมายเลขคำสั่งประมาณ 5 นาที", size: "md", color: "#999999", margin: "md" },
+                { type: "box", layout: "horizontal", contents: [
+                  {
+                    type: "image",
+                    url: "https://cdn-icons-png.freepik.com/512/5610/5610944.png",
+                    size: "xxs",
+                    aspectMode: "cover"
+                  },
+                  { type: "text", text: "ยืนยันคำสั่งสำเร็จ !", weight: "bold", size: "xl", margin: "md" }
+                ]},
+                { type: "text", text: "ระบบจะส่งข้อมูลพนักงานขนส่งและประเภทรถบรรทุกให้ท่านภายใน 1 วันทำการ", size: "md", color: "#999999", margin: "md" },
                 { type: "box", layout: "vertical", margin: "lg", spacing: "sm", contents: [
                   { type: "box", layout: "horizontal", spacing: "sm", contents: [
                     { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", flex: 2 },
@@ -337,8 +344,10 @@
   </script>
 </head>
 <body>
-  <h6>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h6>
-  <h10>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h10>
+  <div class="title-container">
+    <h6>ห้างหุ้นส่วนจำกัด สุภาวินี ซัพพลาย</h6>
+    <h10>SUPAVINEE SUPPLY LIMITED PARTNERSHIP</h10>
+  </div>
   <div id="loading" class="loading">
     <div class="progress-bar">
       <div class="progress-bar-inner"></div>
@@ -369,7 +378,7 @@
       </div>
       <div class="form-group">
         <label for="quantity">น้ำหนักบรรทุก:</label>
-        <input type="number" class="form-control" id="quantity" name="quantity">
+        <input type="number" class="form-control" id="quantity" name="quantity" step="0.001">
       </div>
       <div class="form-group">
         <label for="units">หน่วย:</label>
@@ -402,11 +411,6 @@
       </div>
       <input type="submit" class="btn btn-primary" id="submitBtn" value="ยืนยันคำสั่ง">
     </form>
-    <div id="loading" class="loading">
-      <div class="progress-bar">
-        <div class="progress-bar-inner"></div>
-      </div>
-    </div>
   </div>
 </body>
 </html>
