@@ -94,7 +94,7 @@
         const select = document.getElementById(fieldId);
         data.forEach(item => {
           const option = document.createElement('option');
-          option.value = item.id; // Use item.id to set the value as the ID
+          option.value = item.id; // Use the id for the value
           option.text = item[key];
           select.add(option);
         });
@@ -200,8 +200,8 @@
           receiveDate: receiveDate,
           buyerName: buyerName,
           plant: plant,
-          spn_refineries_id: spn_refineries_id,
-          spn_products_id: spn_products_id,
+          spn_refineries_id: parseInt(spn_refineries_id),
+          spn_products_id: parseInt(spn_products_id),
           quantity: quantity,
           units: units,
           province: province,
@@ -226,8 +226,8 @@
             receiveDate: receiveDate,
             buyerName: buyerName,
             plant: plant,
-            spn_refineries_id: spn_refineries_id,
-            spn_products_id: spn_products_id,
+            spn_refineries_id: parseInt(spn_refineries_id),
+            spn_products_id: parseInt(spn_products_id),
             quantity: quantity,
             units: units,
             province: province,
@@ -276,13 +276,6 @@
                 },
                 { 
                   type: "text", 
-                  text: `Order ID: ${result.id}`, 
-                  size: "md", 
-                  color: "#999999", 
-                  margin: "md" 
-                },
-                { 
-                  type: "text", 
                   text: "ระบบจะส่งข้อมูลพนักงานขนส่งและประเภทรถบรรทุกให้ท่านภายใน 1 วันทำการ", 
                   size: "md", 
                   color: "#999999", 
@@ -310,15 +303,6 @@
                       contents: [
                         { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
                         { type: "text", text: spn_refineries_id, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                      ]
-                    },
-                    {
-                      type: "box",
-                      layout: "horizontal",
-                      spacing: "sm",
-                      contents: [
-                        { type: "text", text: "ชื่อลูกค้า:", color: "#aaaaaa", size: "sm", flex: 2 },
-                        { type: "text", text: buyerName, wrap: true, color: "#666666", size: "sm", flex: 4 }
                       ]
                     },
                     {
@@ -540,47 +524,47 @@
         <input type="date" class="form-control" id="receiveDate" name="receiveDate" required>
       </div>
       <div class="form-group">
-        <label for="buyerName">ชื่อลูกค้า:</label>
-        <input type="text" class="form-control" id="buyerName" name="buyerName" required>
+        <label for="buyerName">ตั๋ว:</label>
+        <input type="text" class="form-control" id="buyerName" name="buyerName">
       </div>
       <div class="form-group">
-        <label for="plant">พืช:</label>
-        <input type="text" class="form-control" id="plant" name="plant" required>
+        <label for="plant">Plant:</label>
+        <input type="text" class="form-control" id="plant" name="plant">
       </div>
       <div class="form-group">
         <label for="spn_refineries_id">โรงกลั่น:</label>
-        <select class="form-control" id="spn_refineries_id" name="spn_refineries_id" required></select>
+        <select class="form-control" id="spn_refineries_id" name="spn_refineries_id"></select>
       </div>
       <div class="form-group">
         <label for="spn_products_id">ผลิตภัณฑ์:</label>
-        <select class="form-control" id="spn_products_id" name="spn_products_id" required></select>
+        <select class="form-control" id="spn_products_id" name="spn_products_id"></select>
       </div>
       <div class="form-group">
         <label for="quantity">น้ำหนักบรรทุก:</label>
-        <input type="number" class="form-control" step="0.001" id="quantity" name="quantity" required>
+        <input type="number" class="form-control" step="0.001" id="quantity" name="quantity">
       </div>
       <div class="form-group">
         <label for="units">หน่วย:</label>
-        <select class="form-control" id="units" name="units" required>
+        <select class="form-control" id="units" name="units">
           <option value="ตัน">ตัน</option>
           <option value="ลิตร">ลิตร</option>
         </select>
       </div>
       <div class="form-group">
         <label for="province">ปลายทางจังหวัด:</label>
-        <select class="form-control" id="province" name="province" onchange="populateDistricts()" required>
+        <select class="form-control" id="province" name="province" onchange="populateDistricts()">
           <option value="">เลือกจังหวัด</option>
         </select>
       </div>
       <div class="form-group">
         <label for="district">อำเภอ:</label>
-        <select class="form-control" id="district" name="district" onchange="populateSubDistricts()" required>
+        <select class="form-control" id="district" name="district" onchange="populateSubDistricts()">
           <option value="">เลือกอำเภอ</option>
         </select>
       </div>
       <div class="form-group">
         <label for="subDistrict">ตำบล:</label>
-        <select class="form-control" id="subDistrict" name="subDistrict" required>
+        <select class="form-control" id="subDistrict" name="subDistrict">
           <option value="">เลือกตำบล</option>
         </select>
       </div>
