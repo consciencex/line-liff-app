@@ -175,7 +175,7 @@
         const plant = document.getElementById('plant').value;
         const spn_refineries_id = document.getElementById('spn_refineries_id').value;
         const spn_products_id = document.getElementById('spn_products_id').value;
-        const ticketName = document.getElementById('ticketName').value;
+        const spn_tickets_id = document.getElementById('spn_tickets_id').value;
         const quantity = parseFloat(document.getElementById('quantity').value).toFixed(3);
         const units = document.getElementById('units').value;
         const province = document.getElementById('province').value;
@@ -188,7 +188,7 @@
         const displayName = profile.displayName;
 
         // Validate form fields
-        if (!receiveDate || !buyerName || !plant || !spn_refineries_id || !spn_products_id || !ticketName || !quantity || !units || !province || !district || !subDistrict) {
+        if (!receiveDate || !buyerName || !plant || !spn_refineries_id || !spn_products_id || !spn_tickets_id || !quantity || !units || !province || !district || !subDistrict) {
           alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
           document.getElementById('submitBtn').style.display = 'block';
           document.getElementById('awaitIcon').style.display = 'none';
@@ -203,7 +203,7 @@
           plant: plant,
           spn_refineries_id: parseInt(spn_refineries_id),
           spn_products_id: parseInt(spn_products_id),
-          ticketName: parseInt(ticketName),
+          spn_tickets_id: parseInt(spn_tickets_id),
           quantity: quantity,
           units: units,
           province: province,
@@ -230,7 +230,7 @@
             plant: plant,
             spn_refineries_id: parseInt(spn_refineries_id),
             spn_products_id: parseInt(spn_products_id),
-            ticketName: parseInt(ticketName),
+            spn_tickets_id: parseInt(spn_tickets_id),
             quantity: quantity,
             units: units,
             province: province,
@@ -429,7 +429,7 @@
         document.getElementById('plant').value = order.plant;
         document.getElementById('spn_refineries_id').value = order.spn_refineries_id;
         document.getElementById('spn_products_id').value = order.spn_products_id;
-        document.getElementById('ticketName').value = order.ticketName;
+        document.getElementById('spn_tickets_id').value = order.spn_tickets_id;
         document.getElementById('quantity').value = order.quantity;
         document.getElementById('units').value = order.units;
         document.getElementById('province').value = order.province;
@@ -483,7 +483,7 @@
         // Fetch dropdown data
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
-        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'ticketName', 'ticketName'); // Fetch ticketName data
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); // Fetch ticketName data
         await fetchProvinceData();
 
         document.getElementById('loading').style.display = 'none';
@@ -545,8 +545,8 @@
         <select class="form-control" id="spn_products_id" name="spn_products_id"></select>
       </div>
       <div class="form-group">
-        <label for="ticketName">ตั๋ว:</label>
-        <select class="form-control" id="ticketName" name="ticketName"></select>
+        <label for="spn_tickets_id">ตั๋ว:</label>
+        <select class="form-control" id="spn_tickets_id" name="spn_tickets_id"></select>
       </div>
       <div class="form-group">
         <label for="quantity">น้ำหนักบรรทุก:</label>
