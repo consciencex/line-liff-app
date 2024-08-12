@@ -83,6 +83,7 @@
   <script>
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
+    let lastOrderId = null; // Track the last order ID for displaying in the form
 
     async function fetchDropdownData(url, fieldId, key) {
       try {
@@ -284,12 +285,6 @@
                 },
                 {
                   type: "box",
-                  layout: "vertical",
-                  spacing: "10px",  // Added 10px spacing here
-                  contents: []
-                },
-                {
-                  type: "box",
                   layout: "horizontal",
                   spacing: "sm",
                   contents: [
@@ -312,7 +307,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: "IRPC", wrap: true, color: "#666666", size: "sm", flex: 4 }  // Replace with dynamic refineryName
+                    { type: "text", text: document.querySelector(`#spn_refineries_id option[value='${spn_refineries_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -321,7 +316,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ผลิตภัณฑ์:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: "ผลิตภัณฑ์", wrap: true, color: "#666666", size: "sm", flex: 4 }  // Replace with dynamic productName
+                    { type: "text", text: document.querySelector(`#spn_products_id option[value='${spn_products_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -330,7 +325,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: "ชื่อตั๋ว", wrap: true, color: "#666666", size: "sm", flex: 4 }  // Replace with dynamic ticketName
+                    { type: "text", text: document.querySelector(`#spn_tickets_id option[value='${spn_tickets_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -388,10 +383,8 @@
                   ]
                 },
                 {
-                  type: "box",
-                  layout: "vertical",
-                  spacing: "10px",  // Added 10px spacing here
-                  contents: []
+                  type: "separator",
+                  margin: "xl"
                 },
                 {
                   type: "box",
@@ -506,6 +499,16 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); // Fetch ticketName data
         await fetchProvinceData();
 
+        // Fetch the last order ID
+        const lastOrderResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
+        if (!lastOrderResponse.ok) {
+          throw new Error('Failed to fetch last order ID');
+        }
+        const lastOrderData = await lastOrderResponse.json();
+        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id + 1 : 1; // If no orders, start with ID 1
+
+        document.getElementById('orderId').textContent = lastOrderId;
+
         document.getElementById('loading').style.display = 'none';
         document.querySelector('.form-container').style.display = 'block';
 
@@ -542,6 +545,10 @@
       <img id="profilePicture" alt="Profile Picture">
       <p id="displayName"></p>
       <p id="userId" style="display: none;"></p>
+    </div>
+    <div class="form-group">
+      <label for="orderId">หมายเลขคำสั่ง:</label>
+      <p id="orderId"></p>
     </div>
     <form onsubmit="submitForm(); return false;">
       <div class="form-group">
