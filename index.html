@@ -247,11 +247,11 @@
         }
 
         const result = await response.json();
-        console.log('Xano Response:', result);
-
         if (!result.id) {
           throw new Error('Order ID is missing in the response.');
         }
+
+        console.log('Xano Response:', result);
 
         // Send Flex Message after successful submission
         const flexMessage = {
@@ -287,15 +287,20 @@
                   margin: "xs",
                   align: "center"
                 },
+                { // Add spacing between lines
+                  type: "box",
+                  layout: "vertical",
+                  margin: "md",
+                  contents: []
+                },
                 {
                   type: "box",
                   layout: "horizontal",
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: result.id.toString(), wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ],
-                  margin: "md" // Add margin to create space between the lines
+                    { type: "text", text: `${result.id}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
                 },
                 {
                   type: "box",
