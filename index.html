@@ -82,8 +82,8 @@
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
     let provinceData;
-    let currentOrderId = null;
-    let lastOrderId = null;
+    let currentOrderId = null; // Track the current order ID for edit functionality
+    let lastOrderId = null; // Track the last order ID
 
     async function fetchDropdownData(url, fieldId, key) {
       try {
@@ -95,7 +95,7 @@
         const select = document.getElementById(fieldId);
         data.forEach(item => {
           const option = document.createElement('option');
-          option.value = item.id;
+          option.value = item.id; // Use the id for the value
           option.text = item[key];
           select.add(option);
         });
@@ -137,7 +137,7 @@
           districtSelect.add(option);
         });
       }
-      populateSubDistricts();
+      populateSubDistricts(); // Clear the subdistricts dropdown
     }
 
     function populateSubDistricts() {
@@ -212,10 +212,13 @@
           targetDate: targetDate
         });
 
-        const url = currentOrderId 
-          ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
-          : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
-        const method = currentOrderId ? 'PATCH' : 'POST';
+        let url = 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
+        let method = 'POST';
+
+        if (currentOrderId) {
+          url = `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}`;
+          method = 'PATCH';
+        }
 
         const response = await fetch(url, {
           method: method,
@@ -450,7 +453,7 @@
         document.getElementById('subDistrict').value = order.subDistrict;
         document.getElementById('targetDate').value = order.targetDate;
 
-        currentOrderId = orderId;
+        currentOrderId = orderId; // Set the current order ID for PATCH request
       } catch (error) {
         console.error('Error loading order data:', error);
       }
@@ -486,7 +489,7 @@
           liff.login();
         } else {
           const profile = await liff.getProfile();
-          document.getElementById('userId').style.display = 'none';
+          document.getElementById('userId').style.display = 'none'; // Hide the LINE ID
           document.getElementById('displayName').textContent = profile.displayName;
           document.getElementById('profilePicture').src = profile.pictureUrl;
         }
@@ -495,15 +498,6 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName');
         await fetchProvinceData();
-
-        const lastOrderResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
-        if (!lastOrderResponse.ok) {
-          throw new Error('Failed to fetch last order ID');
-        }
-        const lastOrderData = await lastOrderResponse.json();
-        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id + 1 : 1;
-
-        document.getElementById('orderId').textContent = lastOrderId;
 
         document.getElementById('loading').style.display = 'none';
         document.querySelector('.form-container').style.display = 'block';
