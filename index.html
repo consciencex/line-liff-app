@@ -196,6 +196,23 @@
           return;
         }
 
+        console.log('Form Data:', {
+          lineId: userId,
+          lineName: displayName,
+          receiveDate: receiveDate,
+          buyerName: buyerName,
+          plant: plant,
+          spn_refineries_id: parseInt(spn_refineries_id),
+          spn_products_id: parseInt(spn_products_id),
+          spn_tickets_id: parseInt(spn_tickets_id),
+          quantity: quantity,
+          units: units,
+          province: province,
+          district: district,
+          subDistrict: subDistrict,
+          targetDate: targetDate
+        });
+
         const url = currentOrderId 
           ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
           : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
@@ -277,7 +294,8 @@
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
                     { type: "text", text: result.id.toString(), wrap: true, color: "#666666", size: "sm", flex: 4 }
-                  ]
+                  ],
+                  margin: "md" // Add margin to create space between the lines
                 },
                 {
                   type: "box",
