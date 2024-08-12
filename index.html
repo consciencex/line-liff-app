@@ -83,6 +83,7 @@
   <script>
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
+    let lastOrderId = null; // Track the last order ID for displaying in the form
 
     async function fetchDropdownData(url, fieldId, key) {
       try {
@@ -195,6 +196,23 @@
           return;
         }
 
+        const formData = {
+          lineId: userId,
+          lineName: displayName,
+          receiveDate: receiveDate,
+          buyerName: buyerName,
+          plant: plant,
+          spn_refineries_id: parseInt(spn_refineries_id),
+          spn_products_id: parseInt(spn_products_id),
+          spn_tickets_id: parseInt(spn_tickets_id),
+          quantity: quantity,
+          units: units,
+          province: province,
+          district: district,
+          subDistrict: subDistrict,
+          targetDate: targetDate
+        };
+
         const url = currentOrderId 
           ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
           : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
@@ -205,22 +223,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            lineId: userId,
-            lineName: displayName,
-            receiveDate: receiveDate,
-            buyerName: buyerName,
-            plant: plant,
-            spn_refineries_id: parseInt(spn_refineries_id),
-            spn_products_id: parseInt(spn_products_id),
-            spn_tickets_id: parseInt(spn_tickets_id),
-            quantity: quantity,
-            units: units,
-            province: province,
-            district: district,
-            subDistrict: subDistrict,
-            targetDate: targetDate
-          })
+          body: JSON.stringify(formData)
         });
 
         if (!response.ok) {
@@ -229,6 +232,7 @@
         }
 
         const result = await response.json();
+        console.log('Xano Response:', result);
 
         // Send Flex Message after successful submission
         const flexMessage = {
@@ -480,6 +484,19 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); // Fetch ticketName data
         await fetchProvinceData();
 
+        // Fetch the last order ID
+        const lastOrderResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
+        if (!lastOrderResponse.ok) {
+          throw new Error('Failed to fetch last order ID');
+        }
+        const lastOrderData = await lastOrderResponse.json();
+        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id + 1 : 1; // If no orders, start with ID 1
+
+        document.getElementById('orderId').textContent = lastOrderId;
+
+        document.getElementById('loading').style.display = 'none';
+        document.querySelector('.form-container').style.display = 'block';
+
         // Check for order ID or delete order ID in URL
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('orderId');
@@ -492,10 +509,6 @@
         if (deleteOrderId) {
           await deleteOrder(deleteOrderId);
         }
-
-        document.getElementById('loading').style.display = 'none';
-        document.querySelector('.form-container').style.display = 'block';
-
       } catch (error) {
         console.error('LIFF initialization failed', error);
         alert('LIFF initialization failed: ' + error.message);
@@ -517,6 +530,10 @@
       <img id="profilePicture" alt="Profile Picture">
       <p id="displayName"></p>
       <p id="userId" style="display: none;"></p>
+    </div>
+    <div class="form-group">
+      <label for="orderId">หมายเลขคำสั่ง:</label>
+      <p id="orderId"></p>
     </div>
     <form onsubmit="submitForm(); return false;">
       <div class="form-group">
