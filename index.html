@@ -83,7 +83,7 @@
   <script>
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
-    let lastOrderId = null; // Track the last order ID
+    let lastOrderId = null; // Track the last order ID for displaying in the form
 
     async function fetchDropdownData(url, fieldId, key) {
       try {
@@ -195,30 +195,10 @@
           return;
         }
 
-        console.log('Form Data:', {
-          lineId: userId,
-          lineName: displayName,
-          receiveDate: receiveDate,
-          buyerName: buyerName,
-          plant: plant,
-          spn_refineries_id: parseInt(spn_refineries_id),
-          spn_products_id: parseInt(spn_products_id),
-          spn_tickets_id: parseInt(spn_tickets_id),
-          quantity: quantity,
-          units: units,
-          province: province,
-          district: district,
-          subDistrict: subDistrict,
-          targetDate: targetDate
-        });
-
-        let url = 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
-        let method = 'POST';
-
-        if (currentOrderId) {
-          url = `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}`;
-          method = 'PATCH';
-        }
+        const url = currentOrderId 
+          ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
+          : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
+        const method = currentOrderId ? 'PATCH' : 'POST';
 
         const response = await fetch(url, {
           method: method,
@@ -453,7 +433,7 @@
         document.getElementById('subDistrict').value = order.subDistrict;
         document.getElementById('targetDate').value = order.targetDate;
 
-        currentOrderId = orderId; // Set the current order ID for PATCH request
+        currentOrderId = orderId; // Set the current order ID
       } catch (error) {
         console.error('Error loading order data:', error);
       }
@@ -498,6 +478,15 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName');
         await fetchProvinceData();
+
+        const lastOrderResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
+        if (!lastOrderResponse.ok) {
+          throw new Error('Failed to fetch last order ID');
+        }
+        const lastOrderData = await lastOrderResponse.json();
+        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id + 1 : 1;
+
+        document.getElementById('orderId').textContent = lastOrderId;
 
         document.getElementById('loading').style.display = 'none';
         document.querySelector('.form-container').style.display = 'block';
