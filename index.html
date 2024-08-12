@@ -284,6 +284,12 @@
                 },
                 {
                   type: "box",
+                  layout: "vertical",
+                  spacing: "10px",  // Added 10px spacing here
+                  contents: []
+                },
+                {
+                  type: "box",
                   layout: "horizontal",
                   spacing: "sm",
                   contents: [
@@ -306,7 +312,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.getElementById('spn_refineries_id').options[document.getElementById('spn_refineries_id').selectedIndex].text, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: "IRPC", wrap: true, color: "#666666", size: "sm", flex: 4 }  // Replace with dynamic refineryName
                   ]
                 },
                 {
@@ -315,7 +321,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ผลิตภัณฑ์:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.getElementById('spn_products_id').options[document.getElementById('spn_products_id').selectedIndex].text, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: "ผลิตภัณฑ์", wrap: true, color: "#666666", size: "sm", flex: 4 }  // Replace with dynamic productName
                   ]
                 },
                 {
@@ -324,7 +330,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.getElementById('spn_tickets_id').options[document.getElementById('spn_tickets_id').selectedIndex].text, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: "ชื่อตั๋ว", wrap: true, color: "#666666", size: "sm", flex: 4 }  // Replace with dynamic ticketName
                   ]
                 },
                 {
@@ -381,10 +387,10 @@
                     { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
-                { // Adding a 10px space before the buttons
+                {
                   type: "box",
                   layout: "vertical",
-                  spacing: "xs",
+                  spacing: "10px",  // Added 10px spacing here
                   contents: []
                 },
                 {
