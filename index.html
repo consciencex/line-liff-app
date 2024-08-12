@@ -196,23 +196,6 @@
           return;
         }
 
-        const formData = {
-          lineId: userId,
-          lineName: displayName,
-          receiveDate: receiveDate,
-          buyerName: buyerName,
-          plant: plant,
-          spn_refineries_id: parseInt(spn_refineries_id),
-          spn_products_id: parseInt(spn_products_id),
-          spn_tickets_id: parseInt(spn_tickets_id),
-          quantity: quantity,
-          units: units,
-          province: province,
-          district: district,
-          subDistrict: subDistrict,
-          targetDate: targetDate
-        };
-
         const url = currentOrderId 
           ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
           : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
@@ -223,7 +206,22 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify({
+            lineId: userId,
+            lineName: displayName,
+            receiveDate: receiveDate,
+            buyerName: buyerName,
+            plant: plant,
+            spn_refineries_id: parseInt(spn_refineries_id),
+            spn_products_id: parseInt(spn_products_id),
+            spn_tickets_id: parseInt(spn_tickets_id),
+            quantity: quantity,
+            units: units,
+            province: province,
+            district: district,
+            subDistrict: subDistrict,
+            targetDate: targetDate
+          })
         });
 
         if (!response.ok) {
@@ -232,6 +230,11 @@
         }
 
         const result = await response.json();
+        console.log('Xano Response:', result);
+
+        if (!result.id) {
+          throw new Error('Order ID is missing in the response.');
+        }
 
         // Send Flex Message after successful submission
         const flexMessage = {
@@ -266,10 +269,6 @@
                   color: "#999999",
                   margin: "xs",
                   align: "center"
-                },
-                {
-                  type: "separator",
-                  margin: "lg" // Adds spacing between sections
                 },
                 {
                   type: "box",
