@@ -230,12 +230,11 @@
           throw new Error('Network response was not ok: ' + errorDetails);
         }
 
-        // Fetch the last inserted order (assuming this is after a POST)
+        const result = await response.json();
+
+        // If the order was created (POST request), set currentOrderId
         if (!currentOrderId) {
-          const ordersResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
-          const ordersData = await ordersResponse.json();
-          const lastOrder = ordersData[ordersData.length - 1];
-          currentOrderId = lastOrder.id;
+          currentOrderId = result.id;
         }
 
         const flexMessage = {
@@ -490,13 +489,15 @@
         const orderId = urlParams.get('orderId');
         const deleteOrderId = urlParams.get('deleteOrderId');
 
+        document.getElementById('loading').style.display = 'none';
+        document.querySelector('.form-container').style.display = 'block';
+
         if (orderId) {
           await loadOrderData(orderId);
-          document.getElementById('loading').style.display = 'none';
-          document.querySelector('.form-container').style.display = 'block';
-        } else {
-          document.getElementById('loading').style.display = 'none';
-          document.querySelector('.form-container').style.display = 'block';
+        }
+
+        if (deleteOrderId) {
+          await deleteOrder(deleteOrderId);
         }
       } catch (error) {
         console.error('LIFF initialization failed', error);
