@@ -78,6 +78,9 @@
       text-align: center;
       margin-top: 10px;
     }
+    #orderIdContainer {
+      display: none;
+    }
   </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
@@ -212,7 +215,6 @@
           targetDate: targetDate
         };
 
-        // Determine whether to create or update the order
         const url = currentOrderId 
           ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
           : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
@@ -232,6 +234,11 @@
         }
 
         const result = await response.json();
+
+        // If we just created a new order, fetch the ID from the response to send in the flex message
+        if (!currentOrderId) {
+          currentOrderId = result.id;
+        }
 
         const flexMessage = {
           type: "flex",
@@ -272,7 +279,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: result.id ? `${result.id}` : `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -381,7 +388,7 @@
                       action: {
                         type: "uri",
                         label: "แก้ไข",
-                        uri: `https://consciencex.github.io/line-liff-app/?orderId=${result.id}`
+                        uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
                       }
                     },
                     {
@@ -391,7 +398,7 @@
                       action: {
                         type: "uri",
                         label: "ลบ",
-                        uri: `https://consciencex.github.io/line-liff-app/?deleteOrderId=${result.id}`
+                        uri: `https://consciencex.github.io/line-liff-app/?deleteOrderId=${currentOrderId}`
                       }
                     }
                   ]
@@ -481,16 +488,17 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
         await fetchProvinceData();
 
+        document.getElementById('loading').style.display = 'none';
+        document.querySelector('.form-container').style.display = 'block';
+
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('orderId');
         const deleteOrderId = urlParams.get('deleteOrderId');
 
         if (orderId) {
+          document.getElementById('orderIdContainer').style.display = 'block'; // Show order ID if in edit mode
           await loadOrderData(orderId);
         }
-
-        document.getElementById('loading').style.display = 'none';
-        document.querySelector('.form-container').style.display = 'block';
 
         if (deleteOrderId) {
           await deleteOrder(deleteOrderId);
@@ -517,7 +525,7 @@
       <p id="displayName"></p>
       <p id="userId" style="display: none;"></p>
     </div>
-    <div class="form-group">
+    <div id="orderIdContainer" class="form-group">
       <label for="orderId">หมายเลขคำสั่ง:</label>
       <p id="orderId"></p>
     </div>
