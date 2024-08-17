@@ -78,9 +78,6 @@
       text-align: center;
       margin-top: 10px;
     }
-    #orderIdContainer {
-      display: none;
-    }
   </style>
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
@@ -233,11 +230,12 @@
           throw new Error('Network response was not ok: ' + errorDetails);
         }
 
-        const result = await response.json();
-
-        // If we just created a new order, fetch the ID from the response to send in the flex message
+        // Fetch the last inserted order (assuming this is after a POST)
         if (!currentOrderId) {
-          currentOrderId = result.id;
+          const ordersResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
+          const ordersData = await ordersResponse.json();
+          const lastOrder = ordersData[ordersData.length - 1];
+          currentOrderId = lastOrder.id;
         }
 
         const flexMessage = {
@@ -488,20 +486,17 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
         await fetchProvinceData();
 
-        document.getElementById('loading').style.display = 'none';
-        document.querySelector('.form-container').style.display = 'block';
-
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('orderId');
         const deleteOrderId = urlParams.get('deleteOrderId');
 
         if (orderId) {
-          document.getElementById('orderIdContainer').style.display = 'block'; // Show order ID if in edit mode
           await loadOrderData(orderId);
-        }
-
-        if (deleteOrderId) {
-          await deleteOrder(deleteOrderId);
+          document.getElementById('loading').style.display = 'none';
+          document.querySelector('.form-container').style.display = 'block';
+        } else {
+          document.getElementById('loading').style.display = 'none';
+          document.querySelector('.form-container').style.display = 'block';
         }
       } catch (error) {
         console.error('LIFF initialization failed', error);
@@ -524,10 +519,6 @@
       <img id="profilePicture" alt="Profile Picture">
       <p id="displayName"></p>
       <p id="userId" style="display: none;"></p>
-    </div>
-    <div id="orderIdContainer" class="form-group">
-      <label for="orderId">หมายเลขคำสั่ง:</label>
-      <p id="orderId"></p>
     </div>
     <form onsubmit="submitForm(); return false;">
       <div class="form-group">
