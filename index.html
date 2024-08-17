@@ -196,6 +196,23 @@
           return;
         }
 
+        console.log('Form Data:', {
+          lineId: userId,
+          lineName: displayName,
+          receiveDate: receiveDate,
+          buyerName: buyerName,
+          plant: plant,
+          spn_refineries_id: parseInt(spn_refineries_id),
+          spn_products_id: parseInt(spn_products_id),
+          spn_tickets_id: parseInt(spn_tickets_id),
+          quantity: quantity,
+          units: units,
+          province: province,
+          district: district,
+          subDistrict: subDistrict,
+          targetDate: targetDate
+        });
+
         const url = currentOrderId 
           ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
           : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
@@ -272,7 +289,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: result.id ? `${result.id}` : `${lastOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: result.id ? `${result.id}` : `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -488,7 +505,7 @@
           throw new Error('Failed to fetch last order ID');
         }
         const lastOrderData = await lastOrderResponse.json();
-        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id : 1; // Retrieve the last order ID correctly
+        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id + 1 : 1; // If no orders, start with ID 1
 
         document.getElementById('orderId').textContent = lastOrderId;
 
