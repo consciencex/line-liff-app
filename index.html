@@ -94,7 +94,7 @@
         const select = document.getElementById(fieldId);
         data.forEach(item => {
           const option = document.createElement('option');
-          option.value = item.id; // Use the id for the value
+          option.value = item.id;
           option.text = item[key];
           select.add(option);
         });
@@ -136,17 +136,15 @@
           districtSelect.add(option);
         });
       }
-      populateSubDistricts(); // Clear the subdistricts dropdown
+      populateSubDistricts();
     }
 
     function populateSubDistricts() {
-      const provinceSelect = document.getElementById('province');
       const districtSelect = document.getElementById('district');
       const subDistrictSelect = document.getElementById('subDistrict');
-      const selectedProvince = provinceSelect.value;
       const selectedDistrict = districtSelect.value;
       subDistrictSelect.innerHTML = '<option value="">เลือกตำบล</option>';
-      const province = provinceData.find(prov => prov.name_th === selectedProvince);
+      const province = provinceData.find(prov => prov.amphure.some(amp => amp.name_th === selectedDistrict));
       if (province) {
         const amphure = province.amphure.find(amp => amp.name_th === selectedDistrict);
         if (amphure) {
@@ -187,13 +185,6 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
-        if (!receiveDate || !buyerName || !plant || !spn_refineries_id || !spn_products_id || !spn_tickets_id || !quantity || !units || !province || !district || !subDistrict) {
-          alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
-          document.getElementById('submitBtn').style.display = 'block';
-          document.getElementById('awaitIcon').style.display = 'none';
-          return;
-        }
-
         const orderPayload = {
           lineId: userId,
           lineName: displayName,
@@ -211,7 +202,8 @@
           targetDate: targetDate
         };
 
-        const response = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders', {
+        // Post the new order to Xano
+        const postResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -219,22 +211,21 @@
           body: JSON.stringify(orderPayload)
         });
 
-        if (!response.ok) {
-          const errorDetails = await response.text();
-          throw new Error('Failed to create order: ' + errorDetails);
+        if (!postResponse.ok) {
+          throw new Error('Failed to create order');
         }
 
-        const createdOrder = await response.json();
-        currentOrderId = createdOrder.id;
+        const postData = await postResponse.json();
+        currentOrderId = postData.id;
 
-        // Fetch the newly created order data for the flex message
-        const fetchOrderResponse = await fetch(`https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}`);
-        if (!fetchOrderResponse.ok) {
+        // Fetch the newly created order details
+        const getResponse = await fetch(`https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}`);
+        if (!getResponse.ok) {
           throw new Error('Failed to fetch order data');
         }
-        const orderDetails = await fetchOrderResponse.json();
 
-        // Generate and send flex message
+        const orderDetails = await getResponse.json();
+
         const flexMessage = {
           type: "flex",
           altText: "ยืนยันคำสั่งสำเร็จ !",
@@ -274,7 +265,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: `${orderDetails.id}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: orderDetails.id ? `${orderDetails.id}` : `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -292,7 +283,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_refineries_id option[value='${spn_refineries_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(`#spn_refineries_id option[value='${orderDetails.spn_refineries_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -301,7 +292,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ผลิตภัณฑ์:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_products_id option[value='${spn_products_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(`#spn_products_id option[value='${orderDetails.spn_products_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -310,7 +301,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_tickets_id option[value='${spn_tickets_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(`#spn_tickets_id option[value='${orderDetails.spn_tickets_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -423,31 +414,23 @@
           liffId: '2005786037-ZwX56JJQ',
           withLoginOnExternalBrowser: true
         });
-
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
           const profile = await liff.getProfile();
-          document.getElementById('userId').style.display = 'none'; // Hide the LINE ID
+          document.getElementById('userId').style.display = 'none';
           document.getElementById('displayName').textContent = profile.displayName;
           document.getElementById('profilePicture').src = profile.pictureUrl;
         }
 
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
-        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName');
         await fetchProvinceData();
 
         document.getElementById('loading').style.display = 'none';
         document.querySelector('.form-container').style.display = 'block';
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('orderId');
-        const deleteOrderId = urlParams.get('deleteOrderId');
-
-        if (deleteOrderId) {
-          await deleteOrder(deleteOrderId);
-        }
       } catch (error) {
         console.error('LIFF initialization failed', error);
         alert('LIFF initialization failed: ' + error.message);
