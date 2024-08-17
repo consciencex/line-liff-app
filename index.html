@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>กรุณากรอกข้อมูลเพื่อยืนยันคำสั่ง</title>
+  <title>กรุณากรอกข้อมุลเพื่อยืนยันคำสั่ง</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
@@ -83,7 +83,6 @@
   <script>
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
-    let lastOrderId = null; // Track the last order ID for displaying in the form
 
     async function fetchDropdownData(url, fieldId, key) {
       try {
@@ -195,23 +194,6 @@
           document.getElementById('awaitIcon').style.display = 'none';
           return;
         }
-
-        console.log('Form Data:', {
-          lineId: userId,
-          lineName: displayName,
-          receiveDate: receiveDate,
-          buyerName: buyerName,
-          plant: plant,
-          spn_refineries_id: parseInt(spn_refineries_id),
-          spn_products_id: parseInt(spn_products_id),
-          spn_tickets_id: parseInt(spn_tickets_id),
-          quantity: quantity,
-          units: units,
-          province: province,
-          district: district,
-          subDistrict: subDistrict,
-          targetDate: targetDate
-        });
 
         const url = currentOrderId 
           ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
@@ -499,19 +481,6 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); // Fetch ticketName data
         await fetchProvinceData();
 
-        // Fetch the last order ID
-        const lastOrderResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
-        if (!lastOrderResponse.ok) {
-          throw new Error('Failed to fetch last order ID');
-        }
-        const lastOrderData = await lastOrderResponse.json();
-        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id + 1 : 1; // If no orders, start with ID 1
-
-        document.getElementById('orderId').textContent = lastOrderId;
-
-        document.getElementById('loading').style.display = 'none';
-        document.querySelector('.form-container').style.display = 'block';
-
         // Check for order ID or delete order ID in URL
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('orderId');
@@ -524,6 +493,9 @@
         if (deleteOrderId) {
           await deleteOrder(deleteOrderId);
         }
+
+        document.getElementById('loading').style.display = 'none';
+        document.querySelector('.form-container').style.display = 'block';
       } catch (error) {
         console.error('LIFF initialization failed', error);
         alert('LIFF initialization failed: ' + error.message);
