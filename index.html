@@ -83,7 +83,6 @@
   <script>
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
-    let lastOrderId = null; // Track the last order ID for displaying in the form
 
     async function fetchDropdownData(url, fieldId, key) {
       try {
@@ -213,6 +212,7 @@
           targetDate: targetDate
         };
 
+        // Determine whether to create or update the order
         const url = currentOrderId 
           ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
           : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
@@ -272,7 +272,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: result.id ? `${result.id}` : `${lastOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: result.id ? `${result.id}` : `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -481,18 +481,6 @@
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
         await fetchProvinceData();
 
-        const lastOrderResponse = await fetch('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders');
-        if (!lastOrderResponse.ok) {
-          throw new Error('Failed to fetch last order ID');
-        }
-        const lastOrderData = await lastOrderResponse.json();
-        lastOrderId = lastOrderData.length ? lastOrderData[lastOrderData.length - 1].id + 1 : 1;
-
-        document.getElementById('orderId').textContent = lastOrderId;
-
-        document.getElementById('loading').style.display = 'none';
-        document.querySelector('.form-container').style.display = 'block';
-
         const urlParams = new URLSearchParams(window.location.search);
         const orderId = urlParams.get('orderId');
         const deleteOrderId = urlParams.get('deleteOrderId');
@@ -500,6 +488,9 @@
         if (orderId) {
           await loadOrderData(orderId);
         }
+
+        document.getElementById('loading').style.display = 'none';
+        document.querySelector('.form-container').style.display = 'block';
 
         if (deleteOrderId) {
           await deleteOrder(deleteOrderId);
