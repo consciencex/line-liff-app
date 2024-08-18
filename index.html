@@ -29,7 +29,7 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      display: none;
+      display: none; /* Initially hidden */
     }
     .form-group {
       margin-bottom: 10px;
@@ -82,7 +82,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
     let provinceData;
-    let currentOrderId = null;
+    let currentOrderId = null; // Track the current order ID for edit functionality
 
     async function initializeLiff() {
       try {
@@ -91,38 +91,116 @@
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
-          // Check and request permissions
-          if (!(await liff.getAcronyms().includes('profile'))) {
+          const permissionGranted = await liff.permission.query('profile');
+          if (!permissionGranted) {
             await liff.permission.request('profile');
           }
-
-          // Once the permissions are granted, proceed with fetching user data
-          const profile = await liff.getProfile();
-          document.getElementById('displayName').textContent = profile.displayName;
-          document.getElementById('profilePicture').src = profile.pictureUrl;
-
-          // Proceed with dropdown data and form setup
-          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
-          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
-          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
-          await fetchProvinceData();
-
-          // Check if the form is in edit mode based on URL parameters
-          const urlParams = new URLSearchParams(window.location.search);
-          const orderId = urlParams.get('orderId');
-          if (orderId) {
-            await loadOrderData(orderId);
-            addOrderIdLabel(orderId);
-            document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง';
-          } else {
-            document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
-          }
         }
+
+        const profile = await liff.getProfile();
+        document.getElementById('userId').style.display = 'none';
+        document.getElementById('displayName').textContent = profile.displayName;
+        document.getElementById('profilePicture').src = profile.pictureUrl;
+
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
+        await fetchProvinceData();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+        if (orderId) {
+          await loadOrderData(orderId);
+          addOrderIdLabel(orderId);
+          document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง'; // Change button text to update
+        } else {
+          document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
+        }
+
       } catch (error) {
         console.error('LIFF initialization failed', error);
         alert('LIFF initialization failed: ' + error.message);
         document.getElementById('loading').style.display = 'none';
       }
+    }
+
+    async function fetchDropdownData(url, fieldId, key) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const select = document.getElementById(fieldId);
+        data.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item.id;
+          option.text = item[key];
+          select.add(option);
+        });
+      } catch (error) {
+        console.error('Error fetching dropdown data:', error);
+      }
+    }
+
+    async function fetchProvinceData() {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province_with_amphure_tambon.json');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        provinceData = await response.json();
+        const provinceSelect = document.getElementById('province');
+        provinceData.forEach(province => {
+          const option = document.createElement('option');
+          option.value = province.name_th;
+          option.text = province.name_th;
+          provinceSelect.add(option);
+        });
+      } catch (error) {
+        console.error('Error fetching province data:', error);
+      }
+    }
+
+    function populateDistricts() {
+      const provinceSelect = document.getElementById('province');
+      const districtSelect = document.getElementById('district');
+      const selectedProvince = provinceSelect.value;
+      districtSelect.innerHTML = '<option value="">เลือกอำเภอ</option>';
+      const province = provinceData.find(prov => prov.name_th === selectedProvince);
+      if (province) {
+        province.amphure.forEach(amphure => {
+          const option = document.createElement('option');
+          option.value = amphure.name_th;
+          option.text = amphure.name_th;
+          districtSelect.add(option);
+        });
+      }
+      populateSubDistricts();
+    }
+
+    function populateSubDistricts() {
+      const districtSelect = document.getElementById('district');
+      const subDistrictSelect = document.getElementById('subDistrict');
+      const selectedDistrict = districtSelect.value;
+      subDistrictSelect.innerHTML = '<option value="">เลือกตำบล</option>';
+      const province = provinceData.find(prov => prov.amphure.some(amp => amp.name_th === selectedDistrict));
+      if (province) {
+        const amphure = province.amphure.find(amp => amp.name_th === selectedDistrict);
+        if (amphure) {
+          amphure.tambon.forEach(tambon => {
+            const option = document.createElement('option');
+            option.value = tambon.name_th;
+            option.text = tambon.name_th;
+            subDistrictSelect.add(option);
+          });
+        }
+      }
+    }
+
+    function formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return new Date(date).toLocaleDateString('th-TH', options);
     }
 
     async function submitForm() {
@@ -142,10 +220,10 @@
         const district = document.getElementById('district').value;
         const subDistrict = document.getElementById('subDistrict').value;
         const targetDate = document.getElementById('targetDate').value;
-        const spn_customers_id = document.getElementById('spn_customers_id').value;
+        const spn_customers_id = document.getElementById('spn_customers_id').value; // Hidden field
         const jobType = document.getElementById('jobType').value; // Hidden field
 
-        const profile = await liff.getProfile();  // Get the profile now that permissions are confirmed
+        const profile = await liff.getProfile();
         const userId = profile.userId;
         const displayName = profile.displayName;
 
@@ -171,8 +249,8 @@
           district: district,
           subDistrict: subDistrict,
           targetDate: targetDate,
-          spn_customers_id: parseInt(spn_customers_id) || null,
-          jobType: jobType || "0"
+          spn_customers_id: parseInt(spn_customers_id) || null,  // Ensure it's sent
+          jobType: jobType || "0"  // Ensure it's sent
         };
 
         const url = currentOrderId 
@@ -199,6 +277,7 @@
           currentOrderId = result.result.id;
         }
 
+        // Send the updated Flex Message using LINE Messaging API
         const flexMessage = {
           type: "flex",
           altText: "ยืนยันคำสั่งสำเร็จ !",
@@ -330,44 +409,30 @@
                     { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", flex: 2 },
                     { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
-                },
-                {
-                  type: "separator",
-                  margin: "xl"
-                },
-                {
-                  type: "box",
-                  layout: "horizontal",
-                  spacing: "md",
-                  contents: [
-                    {
-                      type: "button",
-                      style: "primary",
-                      color: "#007BFF",
-                      action: {
-                        type: "uri",
-                        label: "แก้ไข",
-                        uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
-                      }
-                    },
-                    {
-                      type: "button",
-                      style: "primary",
-                      color: "#FF0000",
-                      action: {
-                        type: "uri",
-                        label: "ลบ",
-                        uri: `https://consciencex.github.io/line-liff-app/?deleteOrderId=${currentOrderId}`
-                      }
-                    }
-                  ]
                 }
               ]
             }
           }
         };
 
-        await liff.sendMessages([flexMessage]);
+        // Using LINE Messaging API
+        const channelToken = 'lRorRE4ac8ylQPBjwyLpaTH6f6p/DIrX0PSkMqO/MEXcOuR5M+czWeRKYW40QqAcE3n/u2UN4WXU9GkmgDCthCBVEYeLuifqnJxTUwjyJmhiKYGjJTkVrEt2Caa1GY9ZAq6W8F4oowfKJ3NuEdjPeAdB04t89/1O/w1cDnyilFU='; // Replace with your channel access token
+        const sendMessageUrl = 'https://api.line.me/v2/bot/message/push';
+
+        const messagePayload = {
+          to: userId,
+          messages: [flexMessage]
+        };
+
+        await fetch(sendMessageUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${channelToken}`
+          },
+          body: JSON.stringify(messagePayload)
+        });
+
         liff.closeWindow();
 
       } catch (error) {
@@ -375,80 +440,6 @@
         alert('Failed to submit the order: ' + error.message);
         document.getElementById('submitBtn').style.display = 'block';
         document.getElementById('awaitIcon').style.display = 'none';
-      }
-    }
-
-    async function fetchDropdownData(url, fieldId, key) {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        const select = document.getElementById(fieldId);
-        data.forEach(item => {
-          const option = document.createElement('option');
-          option.value = item.id;
-          option.text = item[key];
-          select.add(option);
-        });
-      } catch (error) {
-        console.error('Error fetching dropdown data:', error);
-      }
-    }
-
-    async function fetchProvinceData() {
-      try {
-        const response = await fetch('https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province_with_amphure_tambon.json');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        provinceData = await response.json();
-        const provinceSelect = document.getElementById('province');
-        provinceData.forEach(province => {
-          const option = document.createElement('option');
-          option.value = province.name_th;
-          option.text = province.name_th;
-          provinceSelect.add(option);
-        });
-      } catch (error) {
-        console.error('Error fetching province data:', error);
-      }
-    }
-
-    function populateDistricts() {
-      const provinceSelect = document.getElementById('province');
-      const districtSelect = document.getElementById('district');
-      const selectedProvince = provinceSelect.value;
-      districtSelect.innerHTML = '<option value="">เลือกอำเภอ</option>';
-      const province = provinceData.find(prov => prov.name_th === selectedProvince);
-      if (province) {
-        province.amphure.forEach(amphure => {
-          const option = document.createElement('option');
-          option.value = amphure.name_th;
-          option.text = amphure.name_th;
-          districtSelect.add(option);
-        });
-      }
-      populateSubDistricts();
-    }
-
-    function populateSubDistricts() {
-      const districtSelect = document.getElementById('district');
-      const subDistrictSelect = document.getElementById('subDistrict');
-      const selectedDistrict = districtSelect.value;
-      subDistrictSelect.innerHTML = '<option value="">เลือกตำบล</option>';
-      const province = provinceData.find(prov => prov.amphure.some(amp => amp.name_th === selectedDistrict));
-      if (province) {
-        const amphure = province.amphure.find(amp => amp.name_th === selectedDistrict);
-        if (amphure) {
-          amphure.tambon.forEach(tambon => {
-            const option = document.createElement('option');
-            option.value = tambon.name_th;
-            option.text = tambon.name_th;
-            subDistrictSelect.add(option);
-          });
-        }
       }
     }
 
@@ -474,22 +465,10 @@
         populateSubDistricts();
         document.getElementById('subDistrict').value = order.subDistrict;
         document.getElementById('targetDate').value = order.targetDate;
+        document.getElementById('spn_customers_id').value = order.spn_customers_id || '';
+        document.getElementById('jobType').value = order.jobType || '0';
 
-        // Add hidden fields for spn_customers_id and jobType
-        const spn_customers_id = document.createElement('input');
-        spn_customers_id.type = 'hidden';
-        spn_customers_id.id = 'spn_customers_id';
-        spn_customers_id.value = order.spn_customers_id || '';
-
-        const jobType = document.createElement('input');
-        jobType.type = 'hidden';
-        jobType.id = 'jobType';
-        jobType.value = order.jobType || '0';
-
-        document.querySelector('form').appendChild(spn_customers_id);
-        document.querySelector('form').appendChild(jobType);
-
-        currentOrderId = orderId;
+        currentOrderId = orderId; // Set the current order ID
       } catch (error) {
         console.error('Error loading order data:', error);
       }
@@ -593,6 +572,9 @@
         <label for="targetDate">วันที่ส่ง:</label>
         <input type="date" class="form-control" id="targetDate" name="targetDate">
       </div>
+      <!-- Hidden inputs for spn_customers_id and jobType -->
+      <input type="hidden" id="spn_customers_id" name="spn_customers_id">
+      <input type="hidden" id="jobType" name="jobType">
       <input type="submit" class="btn btn-primary" id="submitBtn" value="ยืนยันคำสั่ง">
     </form>
     <div id="awaitIcon" class="await-icon">
