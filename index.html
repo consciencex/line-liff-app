@@ -254,7 +254,7 @@
         };
 
         const url = currentOrderId 
-          ? `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId}` 
+          ? https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${currentOrderId} 
           : 'https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders';
         const method = currentOrderId ? 'PATCH' : 'POST';
 
@@ -277,7 +277,6 @@
           currentOrderId = result.result.id;
         }
 
-        // Send the updated Flex Message using LINE Messaging API
         const flexMessage = {
           type: "flex",
           altText: "ยืนยันคำสั่งสำเร็จ !",
@@ -317,7 +316,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: ${currentOrderId}, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -335,7 +334,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_refineries_id option[value='${spn_refineries_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(#spn_refineries_id option[value='${spn_refineries_id}']).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -344,7 +343,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ผลิตภัณฑ์:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_products_id option[value='${spn_products_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(#spn_products_id option[value='${spn_products_id}']).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -353,7 +352,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_tickets_id option[value='${spn_tickets_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(#spn_tickets_id option[value='${spn_tickets_id}']).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -409,30 +408,44 @@
                     { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", flex: 2 },
                     { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
+                },
+                {
+                  type: "separator",
+                  margin: "xl"
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "md",
+                  contents: [
+                    {
+                      type: "button",
+                      style: "primary",
+                      color: "#007BFF",
+                      action: {
+                        type: "uri",
+                        label: "แก้ไข",
+                        uri: https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}
+                      }
+                    },
+                    {
+                      type: "button",
+                      style: "primary",
+                      color: "#FF0000",
+                      action: {
+                        type: "uri",
+                        label: "ลบ",
+                        uri: https://consciencex.github.io/line-liff-app/?deleteOrderId=${currentOrderId}
+                      }
+                    }
+                  ]
                 }
               ]
             }
           }
         };
 
-        // Using LINE Messaging API
-        const channelToken = 'lRorRE4ac8ylQPBjwyLpaTH6f6p/DIrX0PSkMqO/MEXcOuR5M+czWeRKYW40QqAcE3n/u2UN4WXU9GkmgDCthCBVEYeLuifqnJxTUwjyJmhiKYGjJTkVrEt2Caa1GY9ZAq6W8F4oowfKJ3NuEdjPeAdB04t89/1O/w1cDnyilFU='; // Replace with your channel access token
-        const sendMessageUrl = 'https://api.line.me/v2/bot/message/push';
-
-        const messagePayload = {
-          to: userId,
-          messages: [flexMessage]
-        };
-
-        await fetch(sendMessageUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${channelToken}`
-          },
-          body: JSON.stringify(messagePayload)
-        });
-
+        await liff.sendMessages([flexMessage]);
         liff.closeWindow();
 
       } catch (error) {
@@ -445,7 +458,7 @@
 
     async function loadOrderData(orderId) {
       try {
-        const response = await fetch(`https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${orderId}`);
+        const response = await fetch(https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${orderId});
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -477,7 +490,7 @@
     function addOrderIdLabel(orderId) {
       const labelDiv = document.createElement('div');
       labelDiv.className = 'form-group';
-      labelDiv.innerHTML = `<label for="orderId">หมายเลขคำสั่ง:</label><p class="form-control">${orderId}</p>`;
+      labelDiv.innerHTML = <label for="orderId">หมายเลขคำสั่ง:</label><p class="form-control">${orderId}</p>;
       const formContainer = document.querySelector('.form-container');
       formContainer.insertBefore(labelDiv, formContainer.firstChild);
     }
