@@ -84,7 +84,12 @@
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
 
-    const channelToken = "lRorRE4ac8ylQPBjwyLpaTH6f6p/DIrX0PSkMqO/MEXcOuR5M+czWeRKYW40QqAcE3n/u2UN4WXU9GkmgDCthCBVEYeLuifqnJxTUwjyJmhiKYGjJTkVrEt2Caa1GY9ZAq6W8F4oowfKJ3NuEdjPeAdB04t89/1O/w1cDnyilFU=";
+    // Date formatting function
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: 'short', day: '2-digit' };
+      return date.toLocaleDateString('en-GB', options).replace(',', '');
+    }
 
     async function initializeLiff() {
       try {
@@ -93,25 +98,30 @@
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
-          const profile = await liff.getProfile();
-          document.getElementById('userId').style.display = 'none';
-          document.getElementById('displayName').textContent = profile.displayName;
-          document.getElementById('profilePicture').src = profile.pictureUrl;
-
-          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
-          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
-          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
-          await fetchProvinceData();
-
-          const urlParams = new URLSearchParams(window.location.search);
-          const orderId = urlParams.get('orderId');
-          if (orderId) {
-            await loadOrderData(orderId);
-            addOrderIdLabel(orderId);
-            document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง'; // Change button text to update
-          } else {
-            document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
+          const permissionGranted = await liff.permission.query('profile');
+          if (!permissionGranted) {
+            await liff.permission.request('profile');
           }
+        }
+
+        const profile = await liff.getProfile();
+        document.getElementById('userId').style.display = 'none';
+        document.getElementById('displayName').textContent = profile.displayName;
+        document.getElementById('profilePicture').src = profile.pictureUrl;
+
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
+        await fetchProvinceData();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+        if (orderId) {
+          await loadOrderData(orderId);
+          addOrderIdLabel(orderId);
+          document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง'; // Change button text to update
+        } else {
+          document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
         }
 
       } catch (error) {
@@ -269,7 +279,6 @@
           currentOrderId = result.result.id;
         }
 
-        // Send a Flex Message with updated data
         const flexMessage = {
           type: "flex",
           altText: "ยืนยันคำสั่งสำเร็จ !",
@@ -426,9 +435,9 @@
                       style: "primary",
                       color: "#FF0000",
                       action: {
-                        type: "postback",
+                        type: "uri",
                         label: "ลบ",
-                        data: JSON.stringify({ action: "delete", orderId: currentOrderId })
+                        uri: `https://consciencex.github.io/line-liff-app/?deleteOrderId=${currentOrderId}`
                       }
                     }
                   ]
@@ -438,8 +447,7 @@
           }
         };
 
-        await sendFlexMessage(flexMessage);
-
+        await liff.sendMessages([flexMessage]);
         liff.closeWindow();
 
       } catch (error) {
@@ -447,29 +455,6 @@
         alert('Failed to submit the order: ' + error.message);
         document.getElementById('submitBtn').style.display = 'block';
         document.getElementById('awaitIcon').style.display = 'none';
-      }
-    }
-
-    async function sendFlexMessage(flexMessage) {
-      try {
-        const response = await fetch('https://api.line.me/v2/bot/message/push', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${channelToken}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            to: liff.getProfile().userId,
-            messages: [flexMessage]
-          })
-        });
-
-        if (!response.ok) {
-          const errorDetails = await response.text();
-          throw new Error('Failed to send flex message: ' + errorDetails);
-        }
-      } catch (error) {
-        console.error('Error sending flex message:', error);
       }
     }
 
@@ -528,39 +513,6 @@
         document.getElementById('loading').style.display = 'none';
       }
     };
-
-    // PATCH for delete action
-    async function handleDelete(orderId) {
-      try {
-        const deletePayload = { orderStatus: "Rejected" };
-        const url = `https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_orders/${orderId}`;
-
-        const response = await fetch(url, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(deletePayload)
-        });
-
-        if (!response.ok) {
-          const errorDetails = await response.text();
-          throw new Error('Network response was not ok: ' + errorDetails);
-        }
-
-        console.log('Order rejected successfully');
-      } catch (error) {
-        console.error('Error rejecting order:', error);
-      }
-    }
-
-    liff.postback = async (data) => {
-      const parsedData = JSON.parse(data);
-      if (parsedData.action === 'delete' && parsedData.orderId) {
-        await handleDelete(parsedData.orderId);
-      }
-    };
-
   </script>
 </head>
 <body>
