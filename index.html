@@ -96,7 +96,6 @@
             await liff.permission.request('profile');
           }
 
-          // Fetch profile and proceed with form filling and other tasks
           const profile = await liff.getProfile();
           document.getElementById('displayName').textContent = profile.displayName;
           document.getElementById('profilePicture').src = profile.pictureUrl;
@@ -321,7 +320,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: `${currentOrderId || 'N/A'}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -339,7 +338,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_refineries_id option[value='${spn_refineries_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(`#spn_refineries_id option[value='${spn_refineries_id}']`).textContent || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -348,7 +347,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ผลิตภัณฑ์:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_products_id option[value='${spn_products_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(`#spn_products_id option[value='${spn_products_id}']`).textContent || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -357,7 +356,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: document.querySelector(`#spn_tickets_id option[value='${spn_tickets_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: document.querySelector(`#spn_tickets_id option[value='${spn_tickets_id}']`).textContent || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -366,7 +365,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "น้ำหนัก:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: quantity, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: quantity || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -375,7 +374,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หน่วย:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: units, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: units || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -384,7 +383,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "จังหวัด:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: province, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: province || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -393,7 +392,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "อำเภอ:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: district, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: district || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -402,7 +401,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "ตำบล:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: subDistrict, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: subDistrict || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -411,7 +410,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: formatDate(targetDate) || 'N/A', wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
