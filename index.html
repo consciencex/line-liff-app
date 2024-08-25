@@ -84,11 +84,10 @@
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
 
-    // Date formatting function
-    function formatDate(dateString) {
-      const date = new Date(dateString);
-      const options = { year: 'numeric', month: 'short', day: '2-digit' };
-      return date.toLocaleDateString('en-GB', options).replace(',', '');
+    // Define formatDate function
+    function formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return new Date(date).toLocaleDateString('th-TH', options);
     }
 
     async function initializeLiff() {
@@ -111,7 +110,7 @@
 
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
         await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
-        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName'); 
+        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName');
         await fetchProvinceData();
 
         const urlParams = new URLSearchParams(window.location.search);
