@@ -29,7 +29,7 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      display: none; /* Initially hidden */
+      display: none;
     }
     .form-group {
       margin-bottom: 10px;
@@ -86,13 +86,18 @@
 
     async function initializeLiff() {
       try {
-        await liff.init({ liffId: '2005786037-ZwX56JJQ' });  // Use your LINE Login LIFF ID
+        await liff.init({ liffId: '2005786037-ZwX56JJQ' });
 
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
+          const permissionGranted = await liff.permission.query('profile');
+          if (!permissionGranted) {
+            await liff.permission.request('profile');
+          }
+
+          // Fetch profile and proceed with form filling and other tasks
           const profile = await liff.getProfile();
-          document.getElementById('userId').style.display = 'none';
           document.getElementById('displayName').textContent = profile.displayName;
           document.getElementById('profilePicture').src = profile.pictureUrl;
 
@@ -110,12 +115,17 @@
           } else {
             document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
           }
-        }
 
+        }
       } catch (error) {
-        console.error('LIFF initialization failed', error);
-        alert('LIFF initialization failed: ' + error.message);
-        document.getElementById('loading').style.display = 'none';
+        if (error.message === "The access token expired") {
+          liff.logout();
+          liff.login();
+        } else {
+          console.error('LIFF initialization failed', error);
+          alert('LIFF initialization failed: ' + error.message);
+          document.getElementById('loading').style.display = 'none';
+        }
       }
     }
 
@@ -215,8 +225,8 @@
         const district = document.getElementById('district').value;
         const subDistrict = document.getElementById('subDistrict').value;
         const targetDate = document.getElementById('targetDate').value;
-        const spn_customers_id = document.getElementById('spn_customers_id').value; // Hidden field
-        const jobType = document.getElementById('jobType').value; // Hidden field
+        const spn_customers_id = document.getElementById('spn_customers_id').value;
+        const jobType = document.getElementById('jobType').value;
 
         const profile = await liff.getProfile();
         const userId = profile.userId;
@@ -244,8 +254,8 @@
           district: district,
           subDistrict: subDistrict,
           targetDate: targetDate,
-          spn_customers_id: parseInt(spn_customers_id) || null,  // Ensure it's sent
-          jobType: jobType || "0"  // Ensure it's sent
+          spn_customers_id: parseInt(spn_customers_id) || null,
+          jobType: jobType || "0"
         };
 
         const url = currentOrderId 
