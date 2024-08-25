@@ -110,6 +110,7 @@
           if (orderId) {
             await loadOrderData(orderId);
             addOrderIdLabel(orderId);
+            currentOrderId = orderId; // Set the currentOrderId to the order being edited
             document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง'; // Change button text to update
           } else {
             document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
