@@ -212,6 +212,7 @@
         document.getElementById('submitBtn').style.display = 'none';
         document.getElementById('awaitIcon').style.display = 'block';
 
+        // Gather form data
         const receiveDate = document.getElementById('receiveDate').value;
         const buyerName = document.getElementById('buyerName').value;
         const plant = document.getElementById('plant').value;
@@ -231,6 +232,7 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
+        // Validation
         if (!receiveDate || !buyerName || !plant || !spn_refineries_id || !spn_products_id || !spn_tickets_id || !quantity || !units || !province || !district || !subDistrict) {
           alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
           document.getElementById('submitBtn').style.display = 'block';
@@ -281,143 +283,136 @@
           currentOrderId = result.result.id;
         }
 
-        // Prepare flex message based on the mode
-        let flexMessage;
-        if (currentOrderId) {
-          // Edit Mode - Send Update Confirmation Flex Message
-          flexMessage = {
-            type: "flex",
-            altText: "การอัปเดตคำสั่งสำเร็จ !",
-            contents: {
-              type: "bubble",
-              body: {
-                type: "box",
-                layout: "vertical",
-                contents: [
-                  {
-                    type: "text",
-                    text: "อัปเดตคำสั่งสำเร็จ !",
-                    weight: "bold",
-                    size: "xl",
-                    margin: "md",
-                    align: "center"
-                  },
-                  {
-                    type: "text",
-                    text: "หมายเลขคำสั่ง:",
-                    color: "#aaaaaa",
-                    size: "sm"
-                  },
-                  {
-                    type: "text",
-                    text: `${currentOrderId}`,
-                    weight: "bold",
-                    size: "md"
-                  },
-                  {
-                    type: "separator",
-                    margin: "xl"
-                  },
-                  {
-                    type: "box",
-                    layout: "horizontal",
-                    spacing: "md",
-                    contents: [
-                      {
-                        type: "button",
-                        style: "primary",
-                        color: "#007BFF",
-                        action: {
-                          type: "uri",
-                          label: "ดูคำสั่ง",
-                          uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
-                        }
+        // Determine flex message based on create or update mode
+        const flexMessage = currentOrderId ? {
+          type: "flex",
+          altText: "การอัปเดตคำสั่งสำเร็จ !",
+          contents: {
+            type: "bubble",
+            body: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "text",
+                  text: "อัปเดตคำสั่งสำเร็จ !",
+                  weight: "bold",
+                  size: "xl",
+                  margin: "md",
+                  align: "center"
+                },
+                {
+                  type: "text",
+                  text: "หมายเลขคำสั่ง:",
+                  color: "#aaaaaa",
+                  size: "sm"
+                },
+                {
+                  type: "text",
+                  text: `${currentOrderId}`,
+                  weight: "bold",
+                  size: "md"
+                },
+                {
+                  type: "separator",
+                  margin: "xl"
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "md",
+                  contents: [
+                    {
+                      type: "button",
+                      style: "primary",
+                      color: "#007BFF",
+                      action: {
+                        type: "uri",
+                        label: "ดูคำสั่ง",
+                        uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
                       }
-                    ]
-                  }
-                ]
-              }
+                    }
+                  ]
+                }
+              ]
             }
-          };
-        } else {
-          // Create Mode - Keep original message
-          flexMessage = {
-            type: "flex",
-            altText: "ยืนยันคำสั่งสำเร็จ !",
-            contents: {
-              type: "bubble",
-              body: {
-                type: "box",
-                layout: "vertical",
-                contents: [
-                  {
-                    type: "text",
-                    text: "ยืนยันคำสั่งสำเร็จ !",
-                    weight: "bold",
-                    size: "xl",
-                    margin: "md",
-                    align: "center"
-                  },
-                  {
-                    type: "text",
-                    text: "ข้อมูลพนักงานขนส่งและรถบรรทุก",
-                    size: "md",
-                    color: "#999999",
-                    margin: "md",
-                    align: "center"
-                  },
-                  {
-                    type: "text",
-                    text: "จะส่งให้ท่านภายใน 1-2 วันทำการ",
-                    size: "md",
-                    color: "#999999",
-                    margin: "xs",
-                    align: "center"
-                  },
-                  {
-                    type: "box",
-                    layout: "horizontal",
-                    spacing: "sm",
-                    contents: [
-                      { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                      { type: "text", text: `${currentOrderId || 'N/A'}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
-                    ]
-                  },
-                  {
-                    type: "box",
-                    layout: "horizontal",
-                    spacing: "sm",
-                    contents: [
-                      { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", flex: 2 },
-                      { type: "text", text: formatDate(receiveDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
-                    ]
-                  },
-                  {
-                    type: "separator",
-                    margin: "xl"
-                  },
-                  {
-                    type: "box",
-                    layout: "horizontal",
-                    spacing: "md",
-                    contents: [
-                      {
-                        type: "button",
-                        style: "primary",
-                        color: "#007BFF",
-                        action: {
-                          type: "uri",
-                          label: "แก้ไข",
-                          uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
-                        }
+          }
+        } : {
+          type: "flex",
+          altText: "ยืนยันคำสั่งสำเร็จ !",
+          contents: {
+            type: "bubble",
+            body: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "text",
+                  text: "ยืนยันคำสั่งสำเร็จ !",
+                  weight: "bold",
+                  size: "xl",
+                  margin: "md",
+                  align: "center"
+                },
+                {
+                  type: "text",
+                  text: "ข้อมูลพนักงานขนส่งและรถบรรทุก",
+                  size: "md",
+                  color: "#999999",
+                  margin: "md",
+                  align: "center"
+                },
+                {
+                  type: "text",
+                  text: "จะส่งให้ท่านภายใน 1-2 วันทำการ",
+                  size: "md",
+                  color: "#999999",
+                  margin: "xs",
+                  align: "center"
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: `${currentOrderId || 'N/A'}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: formatDate(receiveDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "separator",
+                  margin: "xl"
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "md",
+                  contents: [
+                    {
+                      type: "button",
+                      style: "primary",
+                      color: "#007BFF",
+                      action: {
+                        type: "uri",
+                        label: "แก้ไข",
+                        uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
                       }
-                    ]
-                  }
-                ]
-              }
+                    }
+                  ]
+                }
+              ]
             }
-          };
-        }
+          }
+        };
 
         await liff.sendMessages([flexMessage]);
         liff.closeWindow();
