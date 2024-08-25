@@ -84,43 +84,32 @@
     let provinceData;
     let currentOrderId = null; // Track the current order ID for edit functionality
 
-    // Define formatDate function
-    function formatDate(date) {
-      const options = { year: 'numeric', month: 'long', day: '2-digit' };
-      return new Date(date).toLocaleDateString('th-TH', options);
-    }
-
     async function initializeLiff() {
       try {
-        await liff.init({ liffId: '2005786037-ZwX56JJQ' });
+        await liff.init({ liffId: '2005786037-ZwX56JJQ' });  // Use your LINE Login LIFF ID
 
         if (!liff.isLoggedIn()) {
           liff.login();
         } else {
-          const permissionGranted = await liff.permission.query('profile');
-          if (!permissionGranted) {
-            await liff.permission.request('profile');
+          const profile = await liff.getProfile();
+          document.getElementById('userId').style.display = 'none';
+          document.getElementById('displayName').textContent = profile.displayName;
+          document.getElementById('profilePicture').src = profile.pictureUrl;
+
+          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
+          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
+          await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName');
+          await fetchProvinceData();
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const orderId = urlParams.get('orderId');
+          if (orderId) {
+            await loadOrderData(orderId);
+            addOrderIdLabel(orderId);
+            document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง'; // Change button text to update
+          } else {
+            document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
           }
-        }
-
-        const profile = await liff.getProfile();
-        document.getElementById('userId').style.display = 'none';
-        document.getElementById('displayName').textContent = profile.displayName;
-        document.getElementById('profilePicture').src = profile.pictureUrl;
-
-        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_refinery', 'spn_refineries_id', 'refineryName');
-        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_products', 'spn_products_id', 'productName');
-        await fetchDropdownData('https://xlmj-nxdd-5lt7.s2.xano.io/api:F-P_0CWn/spn_tickets', 'spn_tickets_id', 'ticketName');
-        await fetchProvinceData();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('orderId');
-        if (orderId) {
-          await loadOrderData(orderId);
-          addOrderIdLabel(orderId);
-          document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง'; // Change button text to update
-        } else {
-          document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
         }
 
       } catch (error) {
@@ -202,6 +191,11 @@
           });
         }
       }
+    }
+
+    function formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return new Date(date).toLocaleDateString('th-TH', options);
     }
 
     async function submitForm() {
