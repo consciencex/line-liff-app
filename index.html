@@ -96,6 +96,7 @@
             await liff.permission.request('profile');
           }
 
+          // Fetch profile and proceed with form filling and other tasks
           const profile = await liff.getProfile();
           document.getElementById('displayName').textContent = profile.displayName;
           document.getElementById('profilePicture').src = profile.pictureUrl;
@@ -110,7 +111,6 @@
           if (orderId) {
             await loadOrderData(orderId);
             addOrderIdLabel(orderId);
-            currentOrderId = orderId; // Set the currentOrderId to the order being edited
             document.getElementById('submitBtn').value = 'อัพเดตข้อมูลคำสั่ง'; // Change button text to update
           } else {
             document.getElementById('submitBtn').value = 'ยืนยันคำสั่ง';
@@ -213,7 +213,6 @@
         document.getElementById('submitBtn').style.display = 'none';
         document.getElementById('awaitIcon').style.display = 'block';
 
-        // Gather form data
         const receiveDate = document.getElementById('receiveDate').value;
         const buyerName = document.getElementById('buyerName').value;
         const plant = document.getElementById('plant').value;
@@ -233,7 +232,6 @@
         const userId = profile.userId;
         const displayName = profile.displayName;
 
-        // Validation
         if (!receiveDate || !buyerName || !plant || !spn_refineries_id || !spn_products_id || !spn_tickets_id || !quantity || !units || !province || !district || !subDistrict) {
           alert('กรุณากรอกข้อมูลให้ครบทุกช่อง');
           document.getElementById('submitBtn').style.display = 'block';
@@ -284,61 +282,7 @@
           currentOrderId = result.result.id;
         }
 
-        // Determine flex message based on create or update mode
-        const flexMessage = currentOrderId ? {
-          type: "flex",
-          altText: "การอัปเดตคำสั่งสำเร็จ !",
-          contents: {
-            type: "bubble",
-            body: {
-              type: "box",
-              layout: "vertical",
-              contents: [
-                {
-                  type: "text",
-                  text: "อัปเดตคำสั่งสำเร็จ !",
-                  weight: "bold",
-                  size: "xl",
-                  margin: "md",
-                  align: "center"
-                },
-                {
-                  type: "text",
-                  text: "หมายเลขคำสั่ง:",
-                  color: "#aaaaaa",
-                  size: "sm"
-                },
-                {
-                  type: "text",
-                  text: `${currentOrderId}`,
-                  weight: "bold",
-                  size: "md"
-                },
-                {
-                  type: "separator",
-                  margin: "xl"
-                },
-                {
-                  type: "box",
-                  layout: "horizontal",
-                  spacing: "md",
-                  contents: [
-                    {
-                      type: "button",
-                      style: "primary",
-                      color: "#007BFF",
-                      action: {
-                        type: "uri",
-                        label: "ดูคำสั่ง",
-                        uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        } : {
+        const flexMessage = {
           type: "flex",
           altText: "ยืนยันคำสั่งสำเร็จ !",
           contents: {
@@ -377,7 +321,7 @@
                   spacing: "sm",
                   contents: [
                     { type: "text", text: "หมายเลข:", color: "#aaaaaa", size: "sm", flex: 2 },
-                    { type: "text", text: `${currentOrderId || 'N/A'}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                    { type: "text", text: `${currentOrderId}`, wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -387,6 +331,87 @@
                   contents: [
                     { type: "text", text: "วันที่รับ:", color: "#aaaaaa", size: "sm", flex: 2 },
                     { type: "text", text: formatDate(receiveDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "โรงกลั่น:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: document.querySelector(`#spn_refineries_id option[value='${spn_refineries_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "ผลิตภัณฑ์:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: document.querySelector(`#spn_products_id option[value='${spn_products_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "ตั๋ว:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: document.querySelector(`#spn_tickets_id option[value='${spn_tickets_id}']`).textContent, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "น้ำหนัก:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: quantity, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "หน่วย:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: units, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "จังหวัด:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: province, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "อำเภอ:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: district, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "ตำบล:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: subDistrict, wrap: true, color: "#666666", size: "sm", flex: 4 }
+                  ]
+                },
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  spacing: "sm",
+                  contents: [
+                    { type: "text", text: "วันที่ส่ง:", color: "#aaaaaa", size: "sm", flex: 2 },
+                    { type: "text", text: formatDate(targetDate), wrap: true, color: "#666666", size: "sm", flex: 4 }
                   ]
                 },
                 {
@@ -406,6 +431,16 @@
                         type: "uri",
                         label: "แก้ไข",
                         uri: `https://consciencex.github.io/line-liff-app/?orderId=${currentOrderId}`
+                      }
+                    },
+                    {
+                      type: "button",
+                      style: "primary",
+                      color: "#FF0000",
+                      action: {
+                        type: "uri",
+                        label: "ลบ",
+                        uri: `https://consciencex.github.io/line-liff-app/?deleteOrderId=${currentOrderId}`
                       }
                     }
                   ]
